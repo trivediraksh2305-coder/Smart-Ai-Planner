@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | Smart AI Study Planner</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #7c3aed;
+            --primary-dark: #5b21b6;
+            --secondary: #10b981;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+            --text-light: #cbd5e1;
+            --border: #334155;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            min-height: 90vh;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Left Panel - Brand and Info */
+        .left-panel {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            top: -150px;
+            right: -100px;
+        }
+        
+        .left-panel::after {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            bottom: -80px;
+            left: -80px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .logo-icon {
+            background-color: white;
+            color: var(--primary);
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-right: 15px;
+        }
+        
+        .logo-text {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .left-panel h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .left-panel p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            z-index: 1;
+            position: relative;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .features {
+            list-style: none;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .features li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .features i {
+            background-color: rgba(255, 255, 255, 0.2);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 14px;
+        }
+        
+        /* Right Panel - Registration Form */
+        .right-panel {
+            flex: 1;
+            background-color: var(--card-bg);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .right-panel h2 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+        
+        .right-panel .subtitle {
+            color: var(--text-light);
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            background-color: #2d3748;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+        }
+        
+        .select-wrapper {
+            position: relative;
+        }
+        
+        .select-wrapper i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: var(--text-light);
+        }
+        
+        select.form-control {
+            appearance: none;
+            padding-right: 45px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 25px;
+            color: var(--text-light);
+        }
+        
+        .login-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            color: var(--danger);
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+                min-height: auto;
+            }
+            
+            .left-panel {
+                padding: 30px;
+            }
+            
+            .right-panel {
+                padding: 30px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .left-panel, .right-panel {
+                padding: 20px;
+            }
+            
+            .left-panel h2 {
+                font-size: 28px;
+            }
+            
+            .right-panel h2 {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Panel with Brand Info -->
+        <div class="left-panel">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div class="logo-text">StudyAI</div>
+            </div>
+            
+            <h2>Your Personal AI Study Assistant</h2>
+            <p>Create a personalized study plan that adapts to your schedule, priorities, and learning pace. Let AI optimize your study time for maximum efficiency.</p>
+            
+            <ul class="features">
+                <li><i class="fas fa-check"></i> Smart AI Study Planner</li>
+                <li><i class="fas fa-check"></i> Personalized Daily Timetable</li>
+                <li><i class="fas fa-check"></i> Priority-Based Time Allocation</li>
+                <li><i class="fas fa-check"></i> Exam Countdown & Progress Tracking</li>
+                <li><i class="fas fa-check"></i> Dark Theme & Modern UI</li>
+            </ul>
+        </div>
+        
+        <!-- Right Panel with Registration Form -->
+        <div class="right-panel">
+            <h2>Create Account</h2>
+            <p class="subtitle">Join thousands of students optimizing their study time with AI</p>
+            
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="studentName">Full Name</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="studentName" class="form-control" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="error-message" id="nameError">Please enter your full name (min. 3 characters)</div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="studentClass">Class / Grade</label>
+                        <div class="input-with-icon select-wrapper">
+                            <i class="fas fa-graduation-cap"></i>
+                            <select id="studentClass" class="form-control" required>
+                                <option value="" disabled selected>Select your class</option>
+                                <option value="9">Grade 9</option>
+                                <option value="10">Grade 10</option>
+                                <option value="11">Grade 11</option>
+                                <option value="12">Grade 12</option>
+                                <option value="college">College</option>
+                                <option value="university">University</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="error-message" id="classError">Please select your class</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="studyGoal">Study Goal</label>
+                        <div class="input-with-icon select-wrapper">
+                            <i class="fas fa-bullseye"></i>
+                            <select id="studyGoal" class="form-control" required>
+                                <option value="" disabled selected>Select your primary goal</option>
+                                <option value="exam">Upcoming Exam</option>
+                                <option value="improve">Improve Grades</option>
+                                <option value="learn">Learn New Subject</option>
+                                <option value="maintain">Maintain Performance</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="error-message" id="goalError">Please select your study goal</div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+                    </div>
+                    <div class="error-message" id="emailError">Please enter a valid email address</div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="password" class="form-control" placeholder="Create a password" required>
+                        </div>
+                        <div class="error-message" id="passwordError">Password must be at least 6 characters long</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="confirmPassword" class="form-control" placeholder="Confirm your password" required>
+                        </div>
+                        <div class="error-message" id="confirmError">Passwords do not match</div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-block" id="registerBtn">
+                    <span id="btnText">Create Account</span>
+                    <i class="fas fa-spinner fa-spin" id="btnSpinner" style="display: none;"></i>
+                </button>
+            </form>
+            
+            <div class="login-link">
+                Already have an account? <a href="login.html">Login here</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Form validation and registration logic
+        document.addEventListener('DOMContentLoaded', function() {
+            const registerForm = document.getElementById('registerForm');
+            const nameInput = document.getElementById('studentName');
+            const classInput = document.getElementById('studentClass');
+            const goalInput = document.getElementById('studyGoal');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const confirmInput = document.getElementById('confirmPassword');
+            const registerBtn = document.getElementById('registerBtn');
+            const btnText = document.getElementById('btnText');
+            const btnSpinner = document.getElementById('btnSpinner');
+            
+            // Error elements
+            const nameError = document.getElementById('nameError');
+            const classError = document.getElementById('classError');
+            const goalError = document.getElementById('goalError');
+            const emailError = document.getElementById('emailError');
+            const passwordError = document.getElementById('passwordError');
+            const confirmError = document.getElementById('confirmError');
+            
+            // Validate individual fields
+            function validateName() {
+                if (nameInput.value.trim().length < 3) {
+                    showError(nameError);
+                    return false;
+                } else {
+                    hideError(nameError);
+                    return true;
+                }
+            }
+            
+            function validateClass() {
+                if (!classInput.value) {
+                    showError(classError);
+                    return false;
+                } else {
+                    hideError(classError);
+                    return true;
+                }
+            }
+            
+            function validateGoal() {
+                if (!goalInput.value) {
+                    showError(goalError);
+                    return false;
+                } else {
+                    hideError(goalError);
+                    return true;
+                }
+            }
+            
+            function validateEmail() {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(emailInput.value.trim())) {
+                    showError(emailError);
+                    return false;
+                } else {
+                    hideError(emailError);
+                    return true;
+                }
+            }
+            
+            function validatePassword() {
+                if (passwordInput.value.length < 6) {
+                    showError(passwordError);
+                    return false;
+                } else {
+                    hideError(passwordError);
+                    return true;
+                }
+            }
+            
+            function validateConfirmPassword() {
+                if (confirmInput.value !== passwordInput.value) {
+                    showError(confirmError);
+                    return false;
+                } else {
+                    hideError(confirmError);
+                    return true;
+                }
+            }
+            
+            function showError(errorElement) {
+                errorElement.style.display = 'block';
+            }
+            
+            function hideError(errorElement) {
+                errorElement.style.display = 'none';
+            }
+            
+            // Real-time validation
+            nameInput.addEventListener('blur', validateName);
+            classInput.addEventListener('change', validateClass);
+            goalInput.addEventListener('change', validateGoal);
+            emailInput.addEventListener('blur', validateEmail);
+            passwordInput.addEventListener('blur', validatePassword);
+            confirmInput.addEventListener('blur', validateConfirmPassword);
+            
+            // Form submission
+            registerForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Validate all fields
+                const isNameValid = validateName();
+                const isClassValid = validateClass();
+                const isGoalValid = validateGoal();
+                const isEmailValid = validateEmail();
+                const isPasswordValid = validatePassword();
+                const isConfirmValid = validateConfirmPassword();
+                
+                if (isNameValid && isClassValid && isGoalValid && isEmailValid && 
+                    isPasswordValid && isConfirmValid) {
+                    
+                    // Show loading state
+                    btnText.textContent = 'Creating Account...';
+                    btnSpinner.style.display = 'inline-block';
+                    registerBtn.disabled = true;
+                    
+                    // Simulate API call/processing
+                    setTimeout(function() {
+                        // Create user object
+                        const user = {
+                            name: nameInput.value.trim(),
+                            class: classInput.value,
+                            goal: goalInput.value,
+                            email: emailInput.value.trim(),
+                            // In a real app, you would hash the password before storing
+                            password: passwordInput.value,
+                            registrationDate: new Date().toISOString()
+                        };
+                        
+                        // Store user data in localStorage
+                        localStorage.setItem('studyAIUser', JSON.stringify(user));
+                        
+                        // Show success message
+                        btnText.textContent = 'Account Created!';
+                        
+                        // Redirect to login page after a short delay
+                        setTimeout(function() {
+                            window.location.href = 'login.html';
+                        }, 1000);
+                        
+                    }, 1500); // Simulate network delay
+                } else {
+                    // Scroll to first error
+                    const firstError = document.querySelector('.error-message[style*="display: block"]');
+                    if (firstError) {
+                        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+            });
+            
+            // Check if user is already logged in
+            function checkExistingUser() {
+                const existingUser = localStorage.getItem('studyAIUser');
+                if (existingUser) {
+                    // User already registered, redirect to login
+                    window.location.href = 'login.html';
+                }
+            }
+            
+            // Check for existing user on page load
+            checkExistingUser();
+        });
+    </script>
+</body>
+</html>

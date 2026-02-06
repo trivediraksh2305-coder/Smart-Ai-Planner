@@ -1,0 +1,1932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Study Planner | Smart AI Study Planner</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #7c3aed;
+            --primary-dark: #5b21b6;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --sidebar-bg: #111827;
+            --text: #f8fafc;
+            --text-light: #cbd5e1;
+            --border: #334155;
+            --success: #10b981;
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-bg);
+            padding: 25px 0;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 100;
+        }
+        
+        .sidebar-header {
+            padding: 0 25px 25px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .logo-icon {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-right: 10px;
+        }
+        
+        .logo-text {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .logo-subtitle {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-left: 50px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            margin-bottom: 20px;
+        }
+        
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--info));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 18px;
+            margin-right: 12px;
+        }
+        
+        .user-details h4 {
+            font-size: 16px;
+            margin-bottom: 3px;
+        }
+        
+        .user-details p {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 30px;
+        }
+        
+        .nav-item {
+            margin-bottom: 5px;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 25px;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-link i {
+            width: 20px;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+        }
+        
+        .nav-link.active {
+            background-color: rgba(124, 58, 237, 0.1);
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+        
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 20px 25px 0;
+            border-top: 1px solid var(--border);
+        }
+        
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px;
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .logout-btn i {
+            margin-right: 8px;
+        }
+        
+        .logout-btn:hover {
+            background-color: rgba(239, 68, 68, 0.2);
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 30px;
+            min-height: 100vh;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .header-left h1 {
+            font-size: 28px;
+            font-weight: 700;
+        }
+        
+        .header-left p {
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+        
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        /* AI Planner Container */
+        .planner-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .planner-header {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .planner-header-content h2 {
+            font-size: 26px;
+            margin-bottom: 10px;
+        }
+        
+        .planner-header-content p {
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 600px;
+        }
+        
+        .ai-icon {
+            font-size: 60px;
+            color: white;
+            opacity: 0.8;
+        }
+        
+        /* Planner Steps */
+        .planner-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .planner-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: var(--border);
+            z-index: 1;
+        }
+        
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+            flex: 1;
+        }
+        
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--card-bg);
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+        
+        .step.active .step-icon {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        
+        .step.completed .step-icon {
+            background-color: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+        
+        .step-label {
+            font-size: 14px;
+            color: var(--text-light);
+            text-align: center;
+        }
+        
+        .step.active .step-label {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        /* Planner Sections */
+        .planner-section {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            display: none;
+        }
+        
+        .planner-section.active {
+            display: block;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-size: 22px;
+            font-weight: 600;
+        }
+        
+        .section-subtitle {
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+        
+        /* Subject Input Form */
+        .subject-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: #2d3748;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+        }
+        
+        .select-wrapper {
+            position: relative;
+        }
+        
+        .select-wrapper i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: var(--text-light);
+        }
+        
+        select.form-control {
+            appearance: none;
+            padding-right: 45px;
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+        
+        .input-with-icon .form-control {
+            padding-left: 45px;
+        }
+        
+        /* Subject List */
+        .subjects-list {
+            margin-bottom: 25px;
+        }
+        
+        .subject-card {
+            background-color: #2d3748;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .subject-info h4 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        
+        .subject-details {
+            display: flex;
+            gap: 15px;
+            margin-top: 8px;
+        }
+        
+        .detail-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .difficulty-easy {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: var(--secondary);
+        }
+        
+        .difficulty-medium {
+            background-color: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+        
+        .difficulty-hard {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+        
+        .priority-high {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+        
+        .priority-medium {
+            background-color: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+        
+        .priority-low {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: var(--secondary);
+        }
+        
+        .subject-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-icon:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn-icon.delete:hover {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+        
+        /* AI Logic Explanation */
+        .ai-logic {
+            background-color: rgba(124, 58, 237, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 25px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .ai-logic h4 {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .ai-logic h4 i {
+            margin-right: 10px;
+        }
+        
+        .ai-logic ul {
+            padding-left: 20px;
+            color: var(--text-light);
+        }
+        
+        .ai-logic li {
+            margin-bottom: 8px;
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn-secondary {
+            background-color: #2d3748;
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #374151;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+        }
+        
+        .btn-success:hover {
+            background-color: #0da271;
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        /* Preview Section */
+        .preview-card {
+            background-color: #2d3748;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .preview-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .preview-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .preview-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .preview-label {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+        
+        .preview-value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        /* Generated Plan Preview */
+        .plan-preview {
+            margin-top: 25px;
+        }
+        
+        .plan-day {
+            background-color: #2d3748;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .day-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .day-total {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+        
+        .plan-session {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .plan-session:last-child {
+            border-bottom: none;
+        }
+        
+        .session-time {
+            width: 100px;
+            font-weight: 600;
+            font-size: 15px;
+        }
+        
+        .session-details {
+            flex: 1;
+            margin-left: 20px;
+        }
+        
+        .session-details h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .session-details p {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        .session-duration {
+            padding: 5px 10px;
+            background-color: rgba(124, 58, 237, 0.2);
+            color: var(--primary);
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1100px) {
+            .subject-form {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 900px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .planner-steps {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+            
+            .planner-steps::before {
+                display: none;
+            }
+            
+            .step {
+                flex-direction: row;
+                width: 100%;
+            }
+            
+            .step-icon {
+                margin-right: 15px;
+                margin-bottom: 0;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .action-buttons {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .planner-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+            
+            .ai-icon {
+                order: -1;
+            }
+            
+            .subject-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .subject-actions {
+                align-self: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div class="logo-text">StudyAI</div>
+            </div>
+            <div class="logo-subtitle">Smart AI Study Planner</div>
+        </div>
+        
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar">JS</div>
+            <div class="user-details">
+                <h4 id="userName">John Student</h4>
+                <p id="userClass">Grade 12</p>
+            </div>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="planner.html" class="nav-link active">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Study Planner</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="timetable.html" class="nav-link">
+                    <i class="fas fa-table"></i>
+                    <span>Daily Timetable</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="subjects.html" class="nav-link">
+                    <i class="fas fa-book"></i>
+                    <span>My Subjects</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="progress.html" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Progress</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="profile.html" class="nav-link">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <button class="logout-btn" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <h1>AI Study Planner</h1>
+                <p>Create your personalized study plan with AI intelligence</p>
+            </div>
+            
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        
+        <!-- Planner Container -->
+        <div class="planner-container">
+            <!-- Planner Header -->
+            <div class="planner-header">
+                <div class="planner-header-content">
+                    <h2>Smart AI Study Planner</h2>
+                    <p>Enter your subjects, difficulty, priority, and exam dates. Our AI will create a personalized study schedule that adapts to your needs and optimizes your study time.</p>
+                </div>
+                <div class="ai-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+            </div>
+            
+            <!-- Planner Steps -->
+            <div class="planner-steps">
+                <div class="step active" id="step1">
+                    <div class="step-icon">1</div>
+                    <div class="step-label">Add Subjects</div>
+                </div>
+                <div class="step" id="step2">
+                    <div class="step-icon">2</div>
+                    <div class="step-label">Set Preferences</div>
+                </div>
+                <div class="step" id="step3">
+                    <div class="step-icon">3</div>
+                    <div class="step-label">Generate Plan</div>
+                </div>
+            </div>
+            
+            <!-- Step 1: Add Subjects -->
+            <div class="planner-section active" id="section1">
+                <div class="section-header">
+                    <div>
+                        <h3 class="section-title">Add Your Subjects</h3>
+                        <p class="section-subtitle">Enter all subjects you need to study for</p>
+                    </div>
+                    <div class="subject-count">
+                        <span id="subjectCount">0</span> subjects added
+                    </div>
+                </div>
+                
+                <!-- Subject Input Form -->
+                <div class="subject-form">
+                    <div class="form-group">
+                        <label for="subjectName">Subject Name</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-book"></i>
+                            <input type="text" id="subjectName" class="form-control" placeholder="e.g., Mathematics, Physics">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="subjectDifficulty">Difficulty Level</label>
+                        <div class="select-wrapper">
+                            <i class="fas fa-chart-line"></i>
+                            <select id="subjectDifficulty" class="form-control">
+                                <option value="easy">Easy</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="subjectPriority">Priority</label>
+                        <div class="select-wrapper">
+                            <i class="fas fa-flag"></i>
+                            <select id="subjectPriority" class="form-control">
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="examDate">Exam Date</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-calendar-day"></i>
+                            <input type="date" id="examDate" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn btn-block" id="addSubjectBtn">
+                    <i class="fas fa-plus"></i>
+                    Add Subject
+                </button>
+                
+                <!-- Subjects List -->
+                <div class="subjects-list" id="subjectsList">
+                    <!-- Subjects will be added here dynamically -->
+                    <div class="empty-state" id="emptyState" style="text-align: center; padding: 40px; color: var(--text-light);">
+                        <i class="fas fa-book-open" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
+                        <h3>No subjects added yet</h3>
+                        <p>Add your first subject using the form above</p>
+                    </div>
+                </div>
+                
+                <!-- AI Logic Explanation -->
+                <div class="ai-logic">
+                    <h4><i class="fas fa-brain"></i> AI Logic for Time Allocation</h4>
+                    <ul>
+                        <li><strong>Hard + High priority</strong> → More study time allocated</li>
+                        <li><strong>Easy + Low priority</strong> → Less study time allocated</li>
+                        <li><strong>Exam closer date</strong> → Higher weight in schedule</li>
+                        <li><strong>Difficulty × Priority × Days to Exam</strong> = Time allocation score</li>
+                    </ul>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" id="prevStep1" disabled>
+                        <i class="fas fa-arrow-left"></i>
+                        Previous
+                    </button>
+                    <button class="btn" id="nextStep1">
+                        Next: Set Preferences
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Step 2: Set Preferences -->
+            <div class="planner-section" id="section2">
+                <div class="section-header">
+                    <div>
+                        <h3 class="section-title">Study Preferences</h3>
+                        <p class="section-subtitle">Configure your daily availability and study preferences</p>
+                    </div>
+                </div>
+                
+                <!-- Preferences Form -->
+                <div class="preview-card">
+                    <div class="preview-header">
+                        <h4 class="preview-title">Your Subjects</h4>
+                        <span id="subjectsCount2">0 subjects</span>
+                    </div>
+                    <div id="subjectsPreview">
+                        <!-- Subjects preview will be added here -->
+                    </div>
+                </div>
+                
+                <div class="subject-form">
+                    <div class="form-group">
+                        <label for="dailyHours">Daily Available Study Hours</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-clock"></i>
+                            <input type="number" id="dailyHours" class="form-control" min="1" max="12" value="4" step="0.5">
+                        </div>
+                        <p class="section-subtitle">How many hours can you study each day?</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="studyStartDate">Study Plan Start Date</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                            <input type="date" id="studyStartDate" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="studyDaysPerWeek">Study Days Per Week</label>
+                        <div class="select-wrapper">
+                            <i class="fas fa-calendar-week"></i>
+                            <select id="studyDaysPerWeek" class="form-control">
+                                <option value="5">5 days (Weekdays)</option>
+                                <option value="6">6 days (Weekdays + Saturday)</option>
+                                <option value="7" selected>7 days (Every day)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="preferredStudyTime">Preferred Study Time</label>
+                        <div class="select-wrapper">
+                            <i class="fas fa-sun"></i>
+                            <select id="preferredStudyTime" class="form-control">
+                                <option value="morning">Morning (6 AM - 12 PM)</option>
+                                <option value="afternoon" selected>Afternoon (12 PM - 6 PM)</option>
+                                <option value="evening">Evening (6 PM - 12 AM)</option>
+                                <option value="mixed">Mixed (Based on availability)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- AI Logic Explanation -->
+                <div class="ai-logic">
+                    <h4><i class="fas fa-cogs"></i> AI Scheduling Algorithm</h4>
+                    <ul>
+                        <li>Considers your daily availability and preferred study times</li>
+                        <li>Balances difficult subjects with easier ones each day</li>
+                        <li>Allocates more time to subjects with approaching exams</li>
+                        <li>Creates a sustainable and realistic study routine</li>
+                        <li>Includes breaks and revision sessions automatically</li>
+                    </ul>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" id="prevStep2">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Subjects
+                    </button>
+                    <button class="btn" id="nextStep2">
+                        Generate AI Study Plan
+                        <i class="fas fa-robot"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Step 3: Generate Plan -->
+            <div class="planner-section" id="section3">
+                <div class="section-header">
+                    <div>
+                        <h3 class="section-title">Your AI-Generated Study Plan</h3>
+                        <p class="section-subtitle">Personalized schedule created by our AI based on your inputs</p>
+                    </div>
+                    <button class="btn btn-success" id="savePlanBtn">
+                        <i class="fas fa-save"></i>
+                        Save Plan
+                    </button>
+                </div>
+                
+                <!-- Plan Summary -->
+                <div class="preview-card">
+                    <div class="preview-header">
+                        <h4 class="preview-title">Plan Summary</h4>
+                    </div>
+                    <div class="preview-details">
+                        <div class="preview-item">
+                            <div class="preview-label">Total Subjects</div>
+                            <div class="preview-value" id="planSubjectsCount">0</div>
+                        </div>
+                        <div class="preview-item">
+                            <div class="preview-label">Daily Study Hours</div>
+                            <div class="preview-value" id="planDailyHours">0</div>
+                        </div>
+                        <div class="preview-item">
+                            <div class="preview-label">Study Days Per Week</div>
+                            <div class="preview-value" id="planDaysPerWeek">0</div>
+                        </div>
+                        <div class="preview-item">
+                            <div class="preview-label">Plan Duration</div>
+                            <div class="preview-value" id="planDuration">0 days</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Generated Plan -->
+                <div class="plan-preview" id="generatedPlan">
+                    <!-- Plan will be generated here -->
+                    <div class="empty-state" id="planEmptyState" style="text-align: center; padding: 40px; color: var(--text-light);">
+                        <i class="fas fa-calendar-alt" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
+                        <h3>Plan not generated yet</h3>
+                        <p>Click "Generate AI Study Plan" to create your personalized schedule</p>
+                    </div>
+                </div>
+                
+                <!-- AI Logic Explanation -->
+                <div class="ai-logic">
+                    <h4><i class="fas fa-lightbulb"></i> How to Use Your Plan Effectively</h4>
+                    <ul>
+                        <li>Follow the daily schedule consistently for best results</li>
+                        <li>Take short breaks (5-10 minutes) between study sessions</li>
+                        <li>Review difficult topics at the beginning of your study session</li>
+                        <li>Use weekends for revision and catching up if needed</li>
+                        <li>Adjust the plan as needed based on your progress</li>
+                    </ul>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" id="prevStep3">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Preferences
+                    </button>
+                    <button class="btn" id="regeneratePlanBtn">
+                        <i class="fas fa-sync-alt"></i>
+                        Regenerate Plan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in
+            checkLoginStatus();
+            
+            // DOM Elements
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.getElementById('menuToggle');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const userAvatar = document.getElementById('userAvatar');
+            const userName = document.getElementById('userName');
+            const userClass = document.getElementById('userClass');
+            
+            // Planner Elements
+            const step1 = document.getElementById('step1');
+            const step2 = document.getElementById('step2');
+            const step3 = document.getElementById('step3');
+            const section1 = document.getElementById('section1');
+            const section2 = document.getElementById('section2');
+            const section3 = document.getElementById('section3');
+            
+            // Step Navigation
+            const nextStep1 = document.getElementById('nextStep1');
+            const nextStep2 = document.getElementById('nextStep2');
+            const prevStep2 = document.getElementById('prevStep2');
+            const prevStep3 = document.getElementById('prevStep3');
+            
+            // Subject Management
+            const subjectName = document.getElementById('subjectName');
+            const subjectDifficulty = document.getElementById('subjectDifficulty');
+            const subjectPriority = document.getElementById('subjectPriority');
+            const examDate = document.getElementById('examDate');
+            const addSubjectBtn = document.getElementById('addSubjectBtn');
+            const subjectsList = document.getElementById('subjectsList');
+            const emptyState = document.getElementById('emptyState');
+            const subjectCount = document.getElementById('subjectCount');
+            const subjectsCount2 = document.getElementById('subjectsCount2');
+            const subjectsPreview = document.getElementById('subjectsPreview');
+            
+            // Preferences
+            const dailyHours = document.getElementById('dailyHours');
+            const studyStartDate = document.getElementById('studyStartDate');
+            const studyDaysPerWeek = document.getElementById('studyDaysPerWeek');
+            const preferredStudyTime = document.getElementById('preferredStudyTime');
+            
+            // Plan Generation
+            const generatedPlan = document.getElementById('generatedPlan');
+            const planEmptyState = document.getElementById('planEmptyState');
+            const savePlanBtn = document.getElementById('savePlanBtn');
+            const regeneratePlanBtn = document.getElementById('regeneratePlanBtn');
+            const planSubjectsCount = document.getElementById('planSubjectsCount');
+            const planDailyHours = document.getElementById('planDailyHours');
+            const planDaysPerWeek = document.getElementById('planDaysPerWeek');
+            const planDuration = document.getElementById('planDuration');
+            
+            // Initialize Data
+            let subjects = [];
+            let studyPlan = null;
+            
+            // Set default dates
+            const today = new Date();
+            const nextWeek = new Date(today);
+            nextWeek.setDate(today.getDate() + 7);
+            
+            // Format date to YYYY-MM-DD
+            function formatDate(date) {
+                return date.toISOString().split('T')[0];
+            }
+            
+            // Set default exam date to 2 weeks from now
+            examDate.value = formatDate(nextWeek);
+            
+            // Set default study start date to tomorrow
+            const tomorrow = new Date(today);
+            tomorrow.setDate(today.getDate() + 1);
+            studyStartDate.value = formatDate(tomorrow);
+            
+            // Load user data
+            loadUserData();
+            
+            // Toggle sidebar on mobile
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+            });
+            
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(event) {
+                if (window.innerWidth <= 900 && 
+                    !sidebar.contains(event.target) && 
+                    !menuToggle.contains(event.target) && 
+                    sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                }
+            });
+            
+            // Logout functionality
+            logoutBtn.addEventListener('click', function() {
+                // Clear session
+                localStorage.removeItem('studyAISession');
+                
+                // Redirect to login page
+                window.location.href = 'login.html';
+            });
+            
+            // Step Navigation
+            nextStep1.addEventListener('click', function() {
+                if (subjects.length === 0) {
+                    alert('Please add at least one subject before proceeding.');
+                    return;
+                }
+                
+                goToStep(2);
+                updateSubjectsPreview();
+            });
+            
+            nextStep2.addEventListener('click', function() {
+                if (!validatePreferences()) {
+                    return;
+                }
+                
+                goToStep(3);
+                generateStudyPlan();
+            });
+            
+            prevStep2.addEventListener('click', function() {
+                goToStep(1);
+            });
+            
+            prevStep3.addEventListener('click', function() {
+                goToStep(2);
+            });
+            
+            // Go to specific step
+            function goToStep(stepNumber) {
+                // Hide all sections
+                section1.classList.remove('active');
+                section2.classList.remove('active');
+                section3.classList.remove('active');
+                
+                // Remove active class from all steps
+                step1.classList.remove('active', 'completed');
+                step2.classList.remove('active', 'completed');
+                step3.classList.remove('active', 'completed');
+                
+                // Show selected section and update steps
+                if (stepNumber === 1) {
+                    section1.classList.add('active');
+                    step1.classList.add('active');
+                } else if (stepNumber === 2) {
+                    section2.classList.add('active');
+                    step1.classList.add('completed');
+                    step2.classList.add('active');
+                } else if (stepNumber === 3) {
+                    section3.classList.add('active');
+                    step1.classList.add('completed');
+                    step2.classList.add('completed');
+                    step3.classList.add('active');
+                }
+            }
+            
+            // Add Subject
+            addSubjectBtn.addEventListener('click', function() {
+                addSubject();
+            });
+            
+            // Also add subject on Enter key in subject name field
+            subjectName.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addSubject();
+                }
+            });
+            
+            // Add subject function
+            function addSubject() {
+                const name = subjectName.value.trim();
+                const difficulty = subjectDifficulty.value;
+                const priority = subjectPriority.value;
+                const exam = examDate.value;
+                
+                // Validate
+                if (!name) {
+                    alert('Please enter a subject name.');
+                    return;
+                }
+                
+                // Check if subject already exists
+                if (subjects.some(subject => subject.name.toLowerCase() === name.toLowerCase())) {
+                    alert('This subject has already been added.');
+                    return;
+                }
+                
+                // Add to subjects array
+                const subject = {
+                    id: Date.now(),
+                    name: name,
+                    difficulty: difficulty,
+                    priority: priority,
+                    examDate: exam,
+                    daysToExam: calculateDaysToExam(exam)
+                };
+                
+                subjects.push(subject);
+                
+                // Update UI
+                updateSubjectsList();
+                updateSubjectCount();
+                
+                // Clear form
+                subjectName.value = '';
+                subjectDifficulty.value = 'medium';
+                subjectPriority.value = 'medium';
+                
+                // Focus back on subject name
+                subjectName.focus();
+            }
+            
+            // Calculate days to exam
+            function calculateDaysToExam(examDateStr) {
+                const examDate = new Date(examDateStr);
+                const today = new Date();
+                const diffTime = examDate - today;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                return Math.max(diffDays, 1); // Minimum 1 day
+            }
+            
+            // Update subjects list in UI
+            function updateSubjectsList() {
+                // Hide empty state if there are subjects
+                if (subjects.length > 0) {
+                    emptyState.style.display = 'none';
+                } else {
+                    emptyState.style.display = 'block';
+                }
+                
+                // Clear current list
+                subjectsList.innerHTML = '';
+                
+                // Add each subject
+                subjects.forEach(subject => {
+                    const subjectCard = document.createElement('div');
+                    subjectCard.className = 'subject-card';
+                    subjectCard.dataset.id = subject.id;
+                    
+                    // Set border color based on priority
+                    let borderColor = 'var(--primary)';
+                    if (subject.priority === 'high') borderColor = 'var(--danger)';
+                    if (subject.priority === 'low') borderColor = 'var(--secondary)';
+                    subjectCard.style.borderLeftColor = borderColor;
+                    
+                    // Difficulty badge
+                    let difficultyClass = 'difficulty-medium';
+                    let difficultyText = 'Medium';
+                    if (subject.difficulty === 'easy') {
+                        difficultyClass = 'difficulty-easy';
+                        difficultyText = 'Easy';
+                    } else if (subject.difficulty === 'hard') {
+                        difficultyClass = 'difficulty-hard';
+                        difficultyText = 'Hard';
+                    }
+                    
+                    // Priority badge
+                    let priorityClass = 'priority-medium';
+                    let priorityText = 'Medium';
+                    if (subject.priority === 'high') {
+                        priorityClass = 'priority-high';
+                        priorityText = 'High';
+                    } else if (subject.priority === 'low') {
+                        priorityClass = 'priority-low';
+                        priorityText = 'Low';
+                    }
+                    
+                    subjectCard.innerHTML = `
+                        <div class="subject-info">
+                            <h4>${subject.name}</h4>
+                            <div class="subject-details">
+                                <span class="detail-badge ${difficultyClass}">
+                                    <i class="fas fa-chart-line"></i> ${difficultyText}
+                                </span>
+                                <span class="detail-badge ${priorityClass}">
+                                    <i class="fas fa-flag"></i> ${priorityText}
+                                </span>
+                                <span class="detail-badge" style="background-color: rgba(59, 130, 246, 0.2); color: var(--info);">
+                                    <i class="fas fa-calendar-day"></i> ${subject.examDate}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="subject-actions">
+                            <button class="btn-icon edit-subject" title="Edit subject">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-icon delete-subject" title="Delete subject">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    subjectsList.appendChild(subjectCard);
+                });
+                
+                // Add event listeners to delete buttons
+                document.querySelectorAll('.delete-subject').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const subjectCard = this.closest('.subject-card');
+                        const subjectId = parseInt(subjectCard.dataset.id);
+                        deleteSubject(subjectId);
+                    });
+                });
+                
+                // Add event listeners to edit buttons
+                document.querySelectorAll('.edit-subject').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const subjectCard = this.closest('.subject-card');
+                        const subjectId = parseInt(subjectCard.dataset.id);
+                        editSubject(subjectId);
+                    });
+                });
+            }
+            
+            // Delete subject
+            function deleteSubject(subjectId) {
+                subjects = subjects.filter(subject => subject.id !== subjectId);
+                updateSubjectsList();
+                updateSubjectCount();
+                updateSubjectsPreview();
+            }
+            
+            // Edit subject
+            function editSubject(subjectId) {
+                const subject = subjects.find(s => s.id === subjectId);
+                if (!subject) return;
+                
+                // Populate form with subject data
+                subjectName.value = subject.name;
+                subjectDifficulty.value = subject.difficulty;
+                subjectPriority.value = subject.priority;
+                examDate.value = subject.examDate;
+                
+                // Remove subject from list
+                deleteSubject(subjectId);
+                
+                // Focus on subject name
+                subjectName.focus();
+            }
+            
+            // Update subject count
+            function updateSubjectCount() {
+                subjectCount.textContent = subjects.length;
+                subjectsCount2.textContent = `${subjects.length} subjects`;
+            }
+            
+            // Update subjects preview in step 2
+            function updateSubjectsPreview() {
+                subjectsPreview.innerHTML = '';
+                
+                subjects.forEach(subject => {
+                    const subjectItem = document.createElement('div');
+                    subjectItem.className = 'subject-preview-item';
+                    subjectItem.style.cssText = `
+                        display: flex;
+                        justify-content: space-between;
+                        padding: 8px 0;
+                        border-bottom: 1px solid var(--border);
+                    `;
+                    
+                    subjectItem.innerHTML = `
+                        <span>${subject.name}</span>
+                        <span style="color: var(--text-light); font-size: 14px;">
+                            ${subject.difficulty} | ${subject.priority} | ${subject.daysToExam} days to exam
+                        </span>
+                    `;
+                    
+                    subjectsPreview.appendChild(subjectItem);
+                });
+            }
+            
+            // Validate preferences
+            function validatePreferences() {
+                const hours = parseFloat(dailyHours.value);
+                
+                if (isNaN(hours) || hours < 1 || hours > 12) {
+                    alert('Please enter a valid number of daily study hours (1-12).');
+                    dailyHours.focus();
+                    return false;
+                }
+                
+                if (!studyStartDate.value) {
+                    alert('Please select a start date for your study plan.');
+                    studyStartDate.focus();
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            // Generate study plan
+            function generateStudyPlan() {
+                // Hide empty state
+                planEmptyState.style.display = 'none';
+                
+                // Clear previous plan
+                generatedPlan.innerHTML = '';
+                
+                // Get preferences
+                const hoursPerDay = parseFloat(dailyHours.value);
+                const startDate = new Date(studyStartDate.value);
+                const daysPerWeek = parseInt(studyDaysPerWeek.value);
+                const studyTime = preferredStudyTime.value;
+                
+                // Update plan summary
+                planSubjectsCount.textContent = subjects.length;
+                planDailyHours.textContent = hoursPerDay;
+                planDaysPerWeek.textContent = daysPerWeek;
+                
+                // Calculate total study days needed
+                const totalStudyDays = calculateTotalStudyDays();
+                planDuration.textContent = `${totalStudyDays} days`;
+                
+                // Create study plan object
+                studyPlan = {
+                    subjects: subjects,
+                    preferences: {
+                        dailyHours: hoursPerDay,
+                        startDate: studyStartDate.value,
+                        daysPerWeek: daysPerWeek,
+                        preferredStudyTime: studyTime
+                    },
+                    generatedDate: new Date().toISOString(),
+                    totalDays: totalStudyDays,
+                    dailyPlans: []
+                };
+                
+                // Generate daily plans for first 7 days
+                generateDailyPlans(studyPlan, 7);
+                
+                // Display the generated plan
+                displayGeneratedPlan(studyPlan);
+            }
+            
+            // Calculate total study days needed
+            function calculateTotalStudyDays() {
+                // Simple algorithm: more difficult/high priority subjects need more days
+                let totalDays = 0;
+                
+                subjects.forEach(subject => {
+                    // Base days based on difficulty and priority
+                    let days = 3; // Base
+                    
+                    if (subject.difficulty === 'hard') days += 4;
+                    if (subject.difficulty === 'medium') days += 2;
+                    
+                    if (subject.priority === 'high') days += 3;
+                    if (subject.priority === 'medium') days += 1;
+                    
+                    // Adjust based on days to exam (closer exams need more immediate attention)
+                    const urgencyFactor = Math.max(1, 14 / subject.daysToExam);
+                    days = Math.ceil(days * urgencyFactor);
+                    
+                    totalDays += days;
+                });
+                
+                // Cap at reasonable number
+                return Math.min(Math.max(totalDays, 7), 90);
+            }
+            
+            // Generate daily plans
+            function generateDailyPlans(plan, numberOfDays) {
+                const { subjects, preferences } = plan;
+                const { dailyHours } = preferences;
+                
+                // AI Logic: Calculate subject weights
+                const subjectWeights = subjects.map(subject => {
+                    let weight = 1;
+                    
+                    // Difficulty multiplier
+                    if (subject.difficulty === 'hard') weight *= 3;
+                    else if (subject.difficulty === 'medium') weight *= 2;
+                    
+                    // Priority multiplier
+                    if (subject.priority === 'high') weight *= 2.5;
+                    else if (subject.priority === 'medium') weight *= 1.5;
+                    
+                    // Urgency multiplier (based on days to exam)
+                    const urgency = Math.max(1, 30 / subject.daysToExam);
+                    weight *= urgency;
+                    
+                    return {
+                        subject: subject,
+                        weight: weight
+                    };
+                });
+                
+                // Normalize weights to percentages
+                const totalWeight = subjectWeights.reduce((sum, item) => sum + item.weight, 0);
+                subjectWeights.forEach(item => {
+                    item.percentage = item.weight / totalWeight;
+                });
+                
+                // Generate daily plans
+                for (let day = 1; day <= numberOfDays; day++) {
+                    const dayPlan = {
+                        day: day,
+                        date: new Date(preferences.startDate),
+                        sessions: []
+                    };
+                    
+                    // Add days to date
+                    dayPlan.date.setDate(dayPlan.date.getDate() + (day - 1));
+                    
+                    // Calculate time per subject for this day
+                    let remainingHours = dailyHours;
+                    
+                    // Sort subjects by weight (highest first)
+                    const sortedSubjects = [...subjectWeights].sort((a, b) => b.weight - a.weight);
+                    
+                    // Allocate time to subjects
+                    for (const item of sortedSubjects) {
+                        if (remainingHours <= 0) break;
+                        
+                        // Calculate hours for this subject (based on percentage)
+                        let hoursForSubject = dailyHours * item.percentage;
+                        
+                        // Add some randomness and ensure minimum 0.5 hours
+                        hoursForSubject = Math.max(0.5, hoursForSubject + (Math.random() * 0.5 - 0.25));
+                        
+                        // Don't exceed remaining hours
+                        hoursForSubject = Math.min(hoursForSubject, remainingHours);
+                        
+                        if (hoursForSubject >= 0.5) {
+                            // Convert to minutes for display
+                            const minutes = Math.round(hoursForSubject * 60);
+                            
+                            // Determine session time based on preferred study time
+                            let sessionTime;
+                            switch (preferences.preferredStudyTime) {
+                                case 'morning':
+                                    sessionTime = '09:00 AM';
+                                    break;
+                                case 'evening':
+                                    sessionTime = '07:00 PM';
+                                    break;
+                                default:
+                                    // Afternoon or mixed
+                                    sessionTime = '02:00 PM';
+                            }
+                            
+                            // Add session
+                            dayPlan.sessions.push({
+                                subject: item.subject.name,
+                                topic: getTopicForSubject(item.subject),
+                                time: sessionTime,
+                                duration: minutes
+                            });
+                            
+                            remainingHours -= hoursForSubject;
+                        }
+                    }
+                    
+                    // Add break if there are multiple sessions
+                    if (dayPlan.sessions.length > 1) {
+                        // Add a break session
+                        dayPlan.sessions.splice(1, 0, {
+                            subject: 'Break',
+                            topic: 'Short break',
+                            time: '10:30 AM',
+                            duration: 15
+                        });
+                    }
+                    
+                    plan.dailyPlans.push(dayPlan);
+                }
+            }
+            
+            // Get topic for subject
+            function getTopicForSubject(subject) {
+                const topics = {
+                    'Mathematics': ['Algebra', 'Calculus', 'Geometry', 'Statistics'],
+                    'Physics': ['Mechanics', 'Thermodynamics', 'Optics', 'Electromagnetism'],
+                    'Chemistry': ['Organic', 'Inorganic', 'Physical', 'Analytical'],
+                    'Biology': ['Cell Biology', 'Genetics', 'Ecology', 'Human Physiology'],
+                    'English': ['Grammar', 'Literature', 'Writing', 'Comprehension'],
+                    'History': ['Ancient', 'Medieval', 'Modern', 'World Wars']
+                };
+                
+                // Find matching subject
+                for (const [key, subjectTopics] of Object.entries(topics)) {
+                    if (subject.name.toLowerCase().includes(key.toLowerCase())) {
+                        return subjectTopics[Math.floor(Math.random() * subjectTopics.length)];
+                    }
+                }
+                
+                // Default topics
+                const defaultTopics = ['Chapter 1', 'Chapter 2', 'Revision', 'Practice Problems'];
+                return defaultTopics[Math.floor(Math.random() * defaultTopics.length)];
+            }
+            
+            // Display generated plan
+            function displayGeneratedPlan(plan) {
+                generatedPlan.innerHTML = '';
+                
+                plan.dailyPlans.forEach(dayPlan => {
+                    const dayElement = document.createElement('div');
+                    dayElement.className = 'plan-day';
+                    
+                    // Format date
+                    const dateStr = dayPlan.date.toLocaleDateString('en-US', { 
+                        weekday: 'long', 
+                        month: 'short', 
+                        day: 'numeric' 
+                    });
+                    
+                    // Calculate total study time for the day
+                    const totalMinutes = dayPlan.sessions.reduce((sum, session) => {
+                        return session.subject === 'Break' ? sum : sum + session.duration;
+                    }, 0);
+                    const totalHours = (totalMinutes / 60).toFixed(1);
+                    
+                    dayElement.innerHTML = `
+                        <div class="day-header">
+                            <div class="day-title">Day ${dayPlan.day}: ${dateStr}</div>
+                            <div class="day-total">${totalHours} study hours</div>
+                        </div>
+                    `;
+                    
+                    // Add sessions
+                    dayPlan.sessions.forEach(session => {
+                        const sessionElement = document.createElement('div');
+                        sessionElement.className = 'plan-session';
+                        
+                        // Format duration
+                        const hours = Math.floor(session.duration / 60);
+                        const minutes = session.duration % 60;
+                        let durationText = '';
+                        if (hours > 0) durationText += `${hours}h `;
+                        if (minutes > 0) durationText += `${minutes}m`;
+                        
+                        sessionElement.innerHTML = `
+                            <div class="session-time">${session.time}</div>
+                            <div class="session-details">
+                                <h4>${session.subject}</h4>
+                                <p>${session.topic}</p>
+                            </div>
+                            <div class="session-duration">${durationText}</div>
+                        `;
+                        
+                        // Style break sessions differently
+                        if (session.subject === 'Break') {
+                            sessionElement.style.opacity = '0.7';
+                            sessionElement.querySelector('.session-duration').style.backgroundColor = 'rgba(245, 158, 11, 0.2)';
+                            sessionElement.querySelector('.session-duration').style.color = 'var(--warning)';
+                        }
+                        
+                        dayElement.appendChild(sessionElement);
+                    });
+                    
+                    generatedPlan.appendChild(dayElement);
+                });
+            }
+            
+            // Save plan
+            savePlanBtn.addEventListener('click', function() {
+                if (!studyPlan) {
+                    alert('Please generate a plan first.');
+                    return;
+                }
+                
+                // Save to localStorage
+                localStorage.setItem('studyAIPlan', JSON.stringify(studyPlan));
+                
+                // Update button text
+                const originalText = savePlanBtn.innerHTML;
+                savePlanBtn.innerHTML = '<i class="fas fa-check"></i> Plan Saved!';
+                savePlanBtn.style.backgroundColor = 'var(--success)';
+                
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    savePlanBtn.innerHTML = originalText;
+                    savePlanBtn.style.backgroundColor = '';
+                }, 2000);
+                
+                // Also update dashboard data
+                const dashboardData = {
+                    subjects: subjects.length,
+                    dailyHours: parseFloat(dailyHours.value),
+                    upcomingExams: subjects.length, // Simple assumption
+                    weakSubjects: subjects.filter(s => s.difficulty === 'hard' || s.priority === 'high').length,
+                    generatedDate: new Date().toISOString()
+                };
+                
+                localStorage.setItem('studyAIDashboard', JSON.stringify(dashboardData));
+            });
+            
+            // Regenerate plan
+            regeneratePlanBtn.addEventListener('click', function() {
+                generateStudyPlan();
+                
+                // Show message
+                const originalText = regeneratePlanBtn.innerHTML;
+                regeneratePlanBtn.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Regenerating...';
+                
+                setTimeout(() => {
+                    regeneratePlanBtn.innerHTML = originalText;
+                    alert('Plan regenerated with new AI optimization!');
+                }, 1000);
+            });
+            
+            // Load user data
+            function loadUserData() {
+                // Get user data from localStorage
+                const userData = localStorage.getItem('studyAIUser');
+                const sessionData = localStorage.getItem('studyAISession');
+                
+                if (userData) {
+                    const user = JSON.parse(userData);
+                    
+                    // Set user name
+                    userName.textContent = user.name;
+                    
+                    // Set user class
+                    const classMap = {
+                        '9': 'Grade 9',
+                        '10': 'Grade 10',
+                        '11': 'Grade 11',
+                        '12': 'Grade 12',
+                        'college': 'College',
+                        'university': 'University',
+                        'other': 'Other'
+                    };
+                    userClass.textContent = classMap[user.class] || `Grade ${user.class}`;
+                    
+                    // Set avatar initials
+                    const nameParts = user.name.split(' ');
+                    const initials = nameParts.length > 1 
+                        ? (nameParts[0][0] + nameParts[1][0]).toUpperCase()
+                        : nameParts[0].substring(0, 2).toUpperCase();
+                    userAvatar.textContent = initials;
+                    
+                    // Load existing subjects if any
+                    const savedPlan = localStorage.getItem('studyAIPlan');
+                    if (savedPlan) {
+                        const plan = JSON.parse(savedPlan);
+                        if (plan.subjects && plan.subjects.length > 0) {
+                            subjects = plan.subjects;
+                            updateSubjectsList();
+                            updateSubjectCount();
+                        }
+                    }
+                }
+            }
+            
+            // Check login status
+            function checkLoginStatus() {
+                const sessionData = localStorage.getItem('studyAISession');
+                
+                if (!sessionData) {
+                    // Not logged in, redirect to login
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                const session = JSON.parse(sessionData);
+                
+                // Check if session is still valid
+                const loginTime = new Date(session.loginTime);
+                const now = new Date();
+                const hoursSinceLogin = (now - loginTime) / (1000 * 60 * 60);
+                
+                // If session is older than 24 hours, require re-login
+                if (hoursSinceLogin > 24) {
+                    localStorage.removeItem('studyAISession');
+                    window.location.href = 'login.html';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

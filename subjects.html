@@ -1,0 +1,1922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Subjects | Smart AI Study Planner</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #7c3aed;
+            --primary-dark: #5b21b6;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --sidebar-bg: #111827;
+            --text: #f8fafc;
+            --text-light: #cbd5e1;
+            --border: #334155;
+            --success: #10b981;
+            --purple-light: #a78bfa;
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-bg);
+            padding: 25px 0;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 100;
+        }
+        
+        .sidebar-header {
+            padding: 0 25px 25px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .logo-icon {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-right: 10px;
+        }
+        
+        .logo-text {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .logo-subtitle {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-left: 50px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            margin-bottom: 20px;
+        }
+        
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--info));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 18px;
+            margin-right: 12px;
+        }
+        
+        .user-details h4 {
+            font-size: 16px;
+            margin-bottom: 3px;
+        }
+        
+        .user-details p {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 30px;
+        }
+        
+        .nav-item {
+            margin-bottom: 5px;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 25px;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-link i {
+            width: 20px;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+        }
+        
+        .nav-link.active {
+            background-color: rgba(124, 58, 237, 0.1);
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+        
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 20px 25px 0;
+            border-top: 1px solid var(--border);
+        }
+        
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px;
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .logout-btn i {
+            margin-right: 8px;
+        }
+        
+        .logout-btn:hover {
+            background-color: rgba(239, 68, 68, 0.2);
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 30px;
+            min-height: 100vh;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .header-left h1 {
+            font-size: 28px;
+            font-weight: 700;
+        }
+        
+        .header-left p {
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+        
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        /* Subjects Container */
+        .subjects-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Subjects Header */
+        .subjects-header {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .subjects-title h2 {
+            font-size: 26px;
+            margin-bottom: 10px;
+        }
+        
+        .subjects-title p {
+            color: var(--text-light);
+            max-width: 600px;
+        }
+        
+        .subjects-stats {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+        
+        /* Subjects Controls */
+        .subjects-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .search-box {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+        }
+        
+        .filter-controls {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .filter-btn {
+            padding: 10px 20px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filter-btn.active {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .filter-btn:hover:not(.active) {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .add-subject-btn {
+            padding: 12px 24px;
+            background-color: var(--primary);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .add-subject-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        /* Subjects Grid */
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .subject-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+        
+        .subject-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subject-header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .subject-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .subject-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 600;
+        }
+        
+        .subject-icon.math {
+            background: linear-gradient(135deg, var(--info), #60a5fa);
+        }
+        
+        .subject-icon.science {
+            background: linear-gradient(135deg, var(--secondary), #34d399);
+        }
+        
+        .subject-icon.english {
+            background: linear-gradient(135deg, var(--primary), var(--purple-light));
+        }
+        
+        .subject-icon.history {
+            background: linear-gradient(135deg, var(--warning), #fbbf24);
+        }
+        
+        .subject-icon.chemistry {
+            background: linear-gradient(135deg, #8b5cf6, #c4b5fd);
+        }
+        
+        .subject-icon.biology {
+            background: linear-gradient(135deg, #10b981, #34d399);
+        }
+        
+        .subject-name h3 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
+        .subject-category {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        .subject-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            background-color: rgba(124, 58, 237, 0.2);
+            color: var(--primary);
+        }
+        
+        .action-btn.delete:hover {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+        
+        /* Subject Details */
+        .subject-details {
+            padding: 20px;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .detail-row:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+        
+        .detail-value {
+            font-weight: 600;
+            font-size: 15px;
+        }
+        
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .difficulty-easy {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: var(--secondary);
+        }
+        
+        .difficulty-medium {
+            background-color: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+        
+        .difficulty-hard {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+        
+        .priority-high {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+        
+        .priority-medium {
+            background-color: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+        
+        .priority-low {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: var(--secondary);
+        }
+        
+        /* Subject Progress */
+        .subject-progress {
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.03);
+            border-top: 1px solid var(--border);
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .progress-label {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+        
+        .progress-percent {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--purple-light));
+        }
+        
+        /* Empty State */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+        
+        .empty-state i {
+            font-size: 60px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .empty-state h3 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            padding: 25px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 22px;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .modal-close:hover {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+        
+        .modal-body {
+            padding: 25px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: #2d3748;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+        
+        .input-with-icon .form-control {
+            padding-left: 45px;
+        }
+        
+        .select-wrapper {
+            position: relative;
+        }
+        
+        .select-wrapper i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: var(--text-light);
+        }
+        
+        select.form-control {
+            appearance: none;
+            padding-right: 45px;
+        }
+        
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn-secondary {
+            background-color: #2d3748;
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #374151;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+        
+        /* AI Recommendations */
+        .ai-recommendations {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+        
+        .recommendations-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+        
+        .recommendations-header i {
+            font-size: 24px;
+            color: var(--primary);
+        }
+        
+        .recommendations-header h3 {
+            font-size: 20px;
+        }
+        
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .recommendation-card {
+            background-color: #2d3748;
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .recommendation-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .recommendation-desc {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .subjects-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+        
+        @media (max-width: 900px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .subjects-header {
+                flex-direction: column;
+                gap: 20px;
+                align-items: flex-start;
+            }
+            
+            .subjects-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .search-box {
+                max-width: 100%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .subjects-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-controls {
+                flex-wrap: wrap;
+            }
+            
+            .recommendations-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .subject-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .subject-actions {
+                align-self: flex-end;
+            }
+            
+            .modal-footer {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div class="logo-text">StudyAI</div>
+            </div>
+            <div class="logo-subtitle">Smart AI Study Planner</div>
+        </div>
+        
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar">JS</div>
+            <div class="user-details">
+                <h4 id="userName">John Student</h4>
+                <p id="userClass">Grade 12</p>
+            </div>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="planner.html" class="nav-link">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Study Planner</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="timetable.html" class="nav-link">
+                    <i class="fas fa-table"></i>
+                    <span>Daily Timetable</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="subjects.html" class="nav-link active">
+                    <i class="fas fa-book"></i>
+                    <span>My Subjects</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="progress.html" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Progress</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="profile.html" class="nav-link">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <button class="logout-btn" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <h1>My Subjects</h1>
+                <p>Manage your subjects, set priorities, and track study progress</p>
+            </div>
+            
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        
+        <!-- Subjects Container -->
+        <div class="subjects-container">
+            <!-- Subjects Header -->
+            <div class="subjects-header">
+                <div class="subjects-title">
+                    <h2>Subject Management</h2>
+                    <p>Add, edit, and organize your subjects. The AI uses this information to create personalized study plans.</p>
+                </div>
+                <div class="subjects-stats">
+                    <div class="stat">
+                        <div class="stat-value" id="totalSubjects">0</div>
+                        <div class="stat-label">Total Subjects</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="hardSubjects">0</div>
+                        <div class="stat-label">Hard Subjects</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="upcomingExams">0</div>
+                        <div class="stat-label">Upcoming Exams</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Subjects Controls -->
+            <div class="subjects-controls">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search subjects...">
+                </div>
+                
+                <div class="filter-controls">
+                    <button class="filter-btn active" data-filter="all">
+                        <i class="fas fa-layer-group"></i>
+                        All Subjects
+                    </button>
+                    <button class="filter-btn" data-filter="difficulty">
+                        <i class="fas fa-chart-line"></i>
+                        By Difficulty
+                    </button>
+                    <button class="filter-btn" data-filter="priority">
+                        <i class="fas fa-flag"></i>
+                        By Priority
+                    </button>
+                </div>
+                
+                <button class="add-subject-btn" id="addSubjectBtn">
+                    <i class="fas fa-plus"></i>
+                    Add New Subject
+                </button>
+            </div>
+            
+            <!-- Subjects Grid -->
+            <div class="subjects-grid" id="subjectsGrid">
+                <!-- Subjects will be loaded here -->
+                <div class="empty-state" id="emptyState">
+                    <i class="fas fa-book-open"></i>
+                    <h3>No subjects added yet</h3>
+                    <p>Add your first subject to get started with AI-powered study planning</p>
+                    <button class="btn" id="addFirstSubject" style="margin-top: 20px;">
+                        <i class="fas fa-plus"></i>
+                        Add Your First Subject
+                    </button>
+                </div>
+            </div>
+            
+            <!-- AI Recommendations -->
+            <div class="ai-recommendations">
+                <div class="recommendations-header">
+                    <i class="fas fa-robot"></i>
+                    <h3>AI Study Recommendations</h3>
+                </div>
+                <div class="recommendations-grid" id="aiRecommendations">
+                    <!-- Recommendations will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add/Edit Subject Modal -->
+    <div class="modal" id="subjectModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Add New Subject</h3>
+                <button class="modal-close" id="modalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <form id="subjectForm">
+                    <div class="form-group">
+                        <label for="modalSubjectName" class="form-label">Subject Name</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-book"></i>
+                            <input type="text" id="modalSubjectName" class="form-control" placeholder="e.g., Mathematics, Physics" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="modalSubjectCategory" class="form-label">Category</label>
+                        <div class="select-wrapper">
+                            <i class="fas fa-tag"></i>
+                            <select id="modalSubjectCategory" class="form-control">
+                                <option value="Mathematics">Mathematics</option>
+                                <option value="Science">Science</option>
+                                <option value="Languages">Languages</option>
+                                <option value="Humanities">Humanities</option>
+                                <option value="Social Sciences">Social Sciences</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="modalDifficulty" class="form-label">Difficulty Level</label>
+                        <div class="select-wrapper">
+                            <i class="fas fa-chart-line"></i>
+                            <select id="modalDifficulty" class="form-control">
+                                <option value="easy">Easy</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="modalPriority" class="form-label">Priority</label>
+                        <div class="select-wrapper">
+                            <i class="fas fa-flag"></i>
+                            <select id="modalPriority" class="form-control">
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="modalExamDate" class="form-label">Exam Date</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-calendar-day"></i>
+                            <input type="date" id="modalExamDate" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="modalStudyHours" class="form-label">Weekly Study Hours (Recommended)</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-clock"></i>
+                            <input type="number" id="modalStudyHours" class="form-control" min="1" max="20" value="5" step="0.5">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="modalNotes" class="form-label">Notes (Optional)</label>
+                        <textarea id="modalNotes" class="form-control" rows="3" placeholder="Add any notes about this subject..."></textarea>
+                    </div>
+                    
+                    <input type="hidden" id="modalSubjectId" value="">
+                </form>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn-secondary" id="modalCancel">Cancel</button>
+                <button class="btn" id="modalSave">Save Subject</button>
+                <button class="btn-danger" id="modalDelete" style="display: none;">Delete Subject</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in
+            checkLoginStatus();
+            
+            // DOM Elements
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.getElementById('menuToggle');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const userAvatar = document.getElementById('userAvatar');
+            const userName = document.getElementById('userName');
+            const userClass = document.getElementById('userClass');
+            
+            // Subjects Elements
+            const subjectsGrid = document.getElementById('subjectsGrid');
+            const emptyState = document.getElementById('emptyState');
+            const addSubjectBtn = document.getElementById('addSubjectBtn');
+            const addFirstSubjectBtn = document.getElementById('addFirstSubject');
+            const searchInput = document.getElementById('searchInput');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            
+            // Stats Elements
+            const totalSubjects = document.getElementById('totalSubjects');
+            const hardSubjects = document.getElementById('hardSubjects');
+            const upcomingExams = document.getElementById('upcomingExams');
+            
+            // Modal Elements
+            const subjectModal = document.getElementById('subjectModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalClose = document.getElementById('modalClose');
+            const modalCancel = document.getElementById('modalCancel');
+            const modalSave = document.getElementById('modalSave');
+            const modalDelete = document.getElementById('modalDelete');
+            
+            // Form Elements
+            const subjectForm = document.getElementById('subjectForm');
+            const modalSubjectId = document.getElementById('modalSubjectId');
+            const modalSubjectName = document.getElementById('modalSubjectName');
+            const modalSubjectCategory = document.getElementById('modalSubjectCategory');
+            const modalDifficulty = document.getElementById('modalDifficulty');
+            const modalPriority = document.getElementById('modalPriority');
+            const modalExamDate = document.getElementById('modalExamDate');
+            const modalStudyHours = document.getElementById('modalStudyHours');
+            const modalNotes = document.getElementById('modalNotes');
+            
+            // Recommendations
+            const aiRecommendations = document.getElementById('aiRecommendations');
+            
+            // Subjects Data
+            let subjects = [];
+            let currentFilter = 'all';
+            let currentEditId = null;
+            
+            // Set default exam date to 2 weeks from now
+            const today = new Date();
+            const twoWeeksLater = new Date(today);
+            twoWeeksLater.setDate(today.getDate() + 14);
+            modalExamDate.value = formatDate(twoWeeksLater);
+            
+            // Load user data
+            loadUserData();
+            
+            // Load subjects data
+            loadSubjects();
+            
+            // Toggle sidebar on mobile
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+            });
+            
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(event) {
+                if (window.innerWidth <= 900 && 
+                    !sidebar.contains(event.target) && 
+                    !menuToggle.contains(event.target) && 
+                    sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                }
+            });
+            
+            // Logout functionality
+            logoutBtn.addEventListener('click', function() {
+                // Clear session
+                localStorage.removeItem('studyAISession');
+                
+                // Redirect to login page
+                window.location.href = 'login.html';
+            });
+            
+            // Open modal to add new subject
+            addSubjectBtn.addEventListener('click', openAddModal);
+            addFirstSubjectBtn.addEventListener('click', openAddModal);
+            
+            // Close modal
+            modalClose.addEventListener('click', closeModal);
+            modalCancel.addEventListener('click', closeModal);
+            
+            // Save subject
+            modalSave.addEventListener('click', saveSubject);
+            
+            // Delete subject
+            modalDelete.addEventListener('click', deleteSubject);
+            
+            // Search subjects
+            searchInput.addEventListener('input', filterSubjects);
+            
+            // Filter buttons
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Get filter type
+                    currentFilter = this.getAttribute('data-filter');
+                    
+                    // Filter subjects
+                    filterSubjects();
+                });
+            });
+            
+            // Close modal on escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && subjectModal.classList.contains('active')) {
+                    closeModal();
+                }
+            });
+            
+            // Format date to YYYY-MM-DD
+            function formatDate(date) {
+                return date.toISOString().split('T')[0];
+            }
+            
+            // Load user data
+            function loadUserData() {
+                // Get user data from localStorage
+                const userData = localStorage.getItem('studyAIUser');
+                const sessionData = localStorage.getItem('studyAISession');
+                
+                if (userData) {
+                    const user = JSON.parse(userData);
+                    
+                    // Set user name
+                    userName.textContent = user.name;
+                    
+                    // Set user class
+                    const classMap = {
+                        '9': 'Grade 9',
+                        '10': 'Grade 10',
+                        '11': 'Grade 11',
+                        '12': 'Grade 12',
+                        'college': 'College',
+                        'university': 'University',
+                        'other': 'Other'
+                    };
+                    userClass.textContent = classMap[user.class] || `Grade ${user.class}`;
+                    
+                    // Set avatar initials
+                    const nameParts = user.name.split(' ');
+                    const initials = nameParts.length > 1 
+                        ? (nameParts[0][0] + nameParts[1][0]).toUpperCase()
+                        : nameParts[0].substring(0, 2).toUpperCase();
+                    userAvatar.textContent = initials;
+                }
+            }
+            
+            // Load subjects from localStorage
+            function loadSubjects() {
+                // Try to load from study plan first
+                const savedPlan = localStorage.getItem('studyAIPlan');
+                
+                if (savedPlan) {
+                    const plan = JSON.parse(savedPlan);
+                    if (plan.subjects && plan.subjects.length > 0) {
+                        subjects = plan.subjects;
+                    } else {
+                        // Load from subjects storage
+                        const savedSubjects = localStorage.getItem('studyAISubjects');
+                        subjects = savedSubjects ? JSON.parse(savedSubjects) : [];
+                    }
+                } else {
+                    // Load from subjects storage
+                    const savedSubjects = localStorage.getItem('studyAISubjects');
+                    subjects = savedSubjects ? JSON.parse(savedSubjects) : [];
+                }
+                
+                // If no subjects, check for demo data
+                if (subjects.length === 0) {
+                    initializeDemoSubjects();
+                } else {
+                    updateSubjectsGrid();
+                    updateStats();
+                    generateAIRecommendations();
+                }
+            }
+            
+            // Initialize demo subjects
+            function initializeDemoSubjects() {
+                const demoSubjects = [
+                    {
+                        id: 1,
+                        name: 'Mathematics',
+                        category: 'Mathematics',
+                        difficulty: 'hard',
+                        priority: 'high',
+                        examDate: formatDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 21)),
+                        studyHours: 8,
+                        notes: 'Focus on calculus and algebra',
+                        progress: 65,
+                        lastStudied: formatDate(new Date())
+                    },
+                    {
+                        id: 2,
+                        name: 'Physics',
+                        category: 'Science',
+                        difficulty: 'hard',
+                        priority: 'high',
+                        examDate: formatDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 16)),
+                        studyHours: 7,
+                        notes: 'Thermodynamics and optics need more practice',
+                        progress: 45,
+                        lastStudied: formatDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() - 2))
+                    },
+                    {
+                        id: 3,
+                        name: 'Chemistry',
+                        category: 'Science',
+                        difficulty: 'medium',
+                        priority: 'medium',
+                        examDate: formatDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 26)),
+                        studyHours: 6,
+                        notes: 'Organic chemistry reactions',
+                        progress: 70,
+                        lastStudied: formatDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1))
+                    },
+                    {
+                        id: 4,
+                        name: 'English Literature',
+                        category: 'Languages',
+                        difficulty: 'easy',
+                        priority: 'medium',
+                        examDate: formatDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 31)),
+                        studyHours: 5,
+                        notes: 'Poetry analysis and essay writing',
+                        progress: 85,
+                        lastStudied: formatDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() - 3))
+                    },
+                    {
+                        id: 5,
+                        name: 'History',
+                        category: 'Humanities',
+                        difficulty: 'medium',
+                        priority: 'low',
+                        examDate: formatDate(new Date(today.getFullYear(), today.getMonth() + 1, 5)),
+                        studyHours: 4,
+                        notes: 'World War II and cold war era',
+                        progress: 55,
+                        lastStudied: formatDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() - 5))
+                    },
+                    {
+                        id: 6,
+                        name: 'Biology',
+                        category: 'Science',
+                        difficulty: 'medium',
+                        priority: 'medium',
+                        examDate: formatDate(new Date(today.getFullYear(), today.getMonth() + 1, 1)),
+                        studyHours: 6,
+                        notes: 'Cell biology and genetics',
+                        progress: 60,
+                        lastStudied: formatDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() - 4))
+                    }
+                ];
+                
+                subjects = demoSubjects;
+                localStorage.setItem('studyAISubjects', JSON.stringify(subjects));
+                
+                updateSubjectsGrid();
+                updateStats();
+                generateAIRecommendations();
+            }
+            
+            // Update subjects grid
+            function updateSubjectsGrid() {
+                // Clear grid
+                subjectsGrid.innerHTML = '';
+                
+                if (subjects.length === 0) {
+                    emptyState.style.display = 'block';
+                    return;
+                }
+                
+                // Hide empty state
+                emptyState.style.display = 'none';
+                
+                // Add subject cards
+                subjects.forEach(subject => {
+                    const subjectCard = document.createElement('div');
+                    subjectCard.className = 'subject-card';
+                    subjectCard.dataset.id = subject.id;
+                    
+                    // Get subject icon class
+                    const iconClass = getSubjectIconClass(subject.name);
+                    
+                    // Format exam date
+                    const examDate = new Date(subject.examDate);
+                    const today = new Date();
+                    const daysToExam = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
+                    
+                    // Difficulty badge
+                    let difficultyClass = 'difficulty-medium';
+                    let difficultyText = 'Medium';
+                    if (subject.difficulty === 'easy') {
+                        difficultyClass = 'difficulty-easy';
+                        difficultyText = 'Easy';
+                    } else if (subject.difficulty === 'hard') {
+                        difficultyClass = 'difficulty-hard';
+                        difficultyText = 'Hard';
+                    }
+                    
+                    // Priority badge
+                    let priorityClass = 'priority-medium';
+                    let priorityText = 'Medium';
+                    if (subject.priority === 'high') {
+                        priorityClass = 'priority-high';
+                        priorityText = 'High';
+                    } else if (subject.priority === 'low') {
+                        priorityClass = 'priority-low';
+                        priorityText = 'Low';
+                    }
+                    
+                    subjectCard.innerHTML = `
+                        <div class="subject-header">
+                            <div class="subject-title">
+                                <div class="subject-icon ${iconClass}">
+                                    ${subject.name.charAt(0)}
+                                </div>
+                                <div class="subject-name">
+                                    <h3>${subject.name}</h3>
+                                    <p class="subject-category">${subject.category}</p>
+                                </div>
+                            </div>
+                            <div class="subject-actions">
+                                <button class="action-btn edit-subject" title="Edit subject">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn delete-subject" title="Delete subject">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="subject-details">
+                            <div class="detail-row">
+                                <span class="detail-label">Difficulty</span>
+                                <span class="detail-value">
+                                    <span class="badge ${difficultyClass}">${difficultyText}</span>
+                                </span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Priority</span>
+                                <span class="detail-value">
+                                    <span class="badge ${priorityClass}">${priorityText}</span>
+                                </span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Exam Date</span>
+                                <span class="detail-value">${formatDisplayDate(subject.examDate)} (${daysToExam} days)</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Weekly Hours</span>
+                                <span class="detail-value">${subject.studyHours || 5} hrs</span>
+                            </div>
+                        </div>
+                        <div class="subject-progress">
+                            <div class="progress-header">
+                                <span class="progress-label">Study Progress</span>
+                                <span class="progress-percent">${subject.progress || 0}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${subject.progress || 0}%"></div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    subjectsGrid.appendChild(subjectCard);
+                    
+                    // Add event listeners to action buttons
+                    const editBtn = subjectCard.querySelector('.edit-subject');
+                    const deleteBtn = subjectCard.querySelector('.delete-subject');
+                    
+                    editBtn.addEventListener('click', function() {
+                        openEditModal(subject.id);
+                    });
+                    
+                    deleteBtn.addEventListener('click', function() {
+                        deleteSubjectConfirm(subject.id);
+                    });
+                });
+            }
+            
+            // Get subject icon class
+            function getSubjectIconClass(subjectName) {
+                const subject = subjectName.toLowerCase();
+                
+                if (subject.includes('math')) return 'math';
+                if (subject.includes('physics')) return 'science';
+                if (subject.includes('chemistry')) return 'chemistry';
+                if (subject.includes('biology')) return 'biology';
+                if (subject.includes('english') || subject.includes('literature')) return 'english';
+                if (subject.includes('history') || subject.includes('social')) return 'history';
+                
+                return 'math'; // Default
+            }
+            
+            // Format date for display
+            function formatDisplayDate(dateString) {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            }
+            
+            // Update stats
+            function updateStats() {
+                totalSubjects.textContent = subjects.length;
+                
+                // Count hard subjects
+                const hardCount = subjects.filter(s => s.difficulty === 'hard').length;
+                hardSubjects.textContent = hardCount;
+                
+                // Count upcoming exams (within 30 days)
+                const today = new Date();
+                const upcomingCount = subjects.filter(s => {
+                    const examDate = new Date(s.examDate);
+                    const daysToExam = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
+                    return daysToExam <= 30 && daysToExam > 0;
+                }).length;
+                
+                upcomingExams.textContent = upcomingCount;
+            }
+            
+            // Generate AI recommendations
+            function generateAIRecommendations() {
+                if (subjects.length === 0) return;
+                
+                // Clear recommendations
+                aiRecommendations.innerHTML = '';
+                
+                // Sort subjects by priority and exam date
+                const sortedSubjects = [...subjects].sort((a, b) => {
+                    // Priority: high > medium > low
+                    const priorityOrder = { high: 3, medium: 2, low: 1 };
+                    
+                    // Calculate days to exam
+                    const today = new Date();
+                    const daysToExamA = Math.ceil((new Date(a.examDate) - today) / (1000 * 60 * 60 * 24));
+                    const daysToExamB = Math.ceil((new Date(b.examDate) - today) / (1000 * 60 * 60 * 24));
+                    
+                    // Calculate score (priority * 10 - days to exam)
+                    const scoreA = (priorityOrder[a.priority] || 1) * 10 - daysToExamA;
+                    const scoreB = (priorityOrder[b.priority] || 1) * 10 - daysToExamB;
+                    
+                    return scoreB - scoreA; // Higher score first
+                });
+                
+                // Get top 3 subjects that need attention
+                const topSubjects = sortedSubjects.slice(0, 3);
+                
+                // Create recommendations
+                topSubjects.forEach(subject => {
+                    const recommendation = document.createElement('div');
+                    recommendation.className = 'recommendation-card';
+                    
+                    let recommendationText = '';
+                    
+                    if (subject.difficulty === 'hard' && subject.priority === 'high') {
+                        recommendationText = `Focus more on ${subject.name}. Allocate additional study time as it's both hard and high priority.`;
+                    } else if (subject.difficulty === 'hard') {
+                        recommendationText = `${subject.name} is a difficult subject. Consider breaking it down into smaller topics for better understanding.`;
+                    } else if (subject.priority === 'high') {
+                        recommendationText = `${subject.name} is high priority. Make sure to review it regularly before the exam.`;
+                    } else {
+                        const daysToExam = Math.ceil((new Date(subject.examDate) - new Date()) / (1000 * 60 * 60 * 24));
+                        recommendationText = `${subject.name} exam is in ${daysToExam} days. Maintain consistent study sessions.`;
+                    }
+                    
+                    // Add progress-based recommendation
+                    if (subject.progress < 50) {
+                        recommendationText += ` Progress is low (${subject.progress}%). Consider increasing weekly study hours.`;
+                    } else if (subject.progress < 80) {
+                        recommendationText += ` Progress is moderate (${subject.progress}%). Keep up the current pace.`;
+                    } else {
+                        recommendationText += ` Progress is good (${subject.progress}%). Focus on revision and practice tests.`;
+                    }
+                    
+                    recommendation.innerHTML = `
+                        <div class="recommendation-title">${subject.name} - AI Recommendation</div>
+                        <div class="recommendation-desc">${recommendationText}</div>
+                    `;
+                    
+                    aiRecommendations.appendChild(recommendation);
+                });
+            }
+            
+            // Open add subject modal
+            function openAddModal() {
+                modalTitle.textContent = 'Add New Subject';
+                modalSubjectId.value = '';
+                
+                // Reset form
+                subjectForm.reset();
+                
+                // Set default values
+                modalDifficulty.value = 'medium';
+                modalPriority.value = 'medium';
+                modalExamDate.value = formatDate(twoWeeksLater);
+                modalStudyHours.value = 5;
+                
+                // Hide delete button
+                modalDelete.style.display = 'none';
+                
+                // Show modal
+                subjectModal.classList.add('active');
+            }
+            
+            // Open edit subject modal
+            function openEditModal(subjectId) {
+                const subject = subjects.find(s => s.id == subjectId);
+                if (!subject) return;
+                
+                modalTitle.textContent = 'Edit Subject';
+                modalSubjectId.value = subject.id;
+                
+                // Fill form with subject data
+                modalSubjectName.value = subject.name;
+                modalSubjectCategory.value = subject.category || 'Mathematics';
+                modalDifficulty.value = subject.difficulty;
+                modalPriority.value = subject.priority;
+                modalExamDate.value = subject.examDate;
+                modalStudyHours.value = subject.studyHours || 5;
+                modalNotes.value = subject.notes || '';
+                
+                // Show delete button
+                modalDelete.style.display = 'inline-flex';
+                
+                // Show modal
+                subjectModal.classList.add('active');
+            }
+            
+            // Close modal
+            function closeModal() {
+                subjectModal.classList.remove('active');
+                currentEditId = null;
+            }
+            
+            // Save subject
+            function saveSubject() {
+                // Validate form
+                if (!modalSubjectName.value.trim()) {
+                    alert('Please enter a subject name.');
+                    modalSubjectName.focus();
+                    return;
+                }
+                
+                if (!modalExamDate.value) {
+                    alert('Please select an exam date.');
+                    modalExamDate.focus();
+                    return;
+                }
+                
+                const subjectId = modalSubjectId.value;
+                const isEdit = !!subjectId;
+                
+                // Create subject object
+                const subject = {
+                    id: isEdit ? parseInt(subjectId) : Date.now(),
+                    name: modalSubjectName.value.trim(),
+                    category: modalSubjectCategory.value,
+                    difficulty: modalDifficulty.value,
+                    priority: modalPriority.value,
+                    examDate: modalExamDate.value,
+                    studyHours: parseFloat(modalStudyHours.value) || 5,
+                    notes: modalNotes.value.trim(),
+                    progress: isEdit ? subjects.find(s => s.id == subjectId).progress || 0 : 0,
+                    lastStudied: isEdit ? subjects.find(s => s.id == subjectId).lastStudied : formatDate(new Date())
+                };
+                
+                if (isEdit) {
+                    // Update existing subject
+                    const index = subjects.findIndex(s => s.id == subjectId);
+                    if (index !== -1) {
+                        subjects[index] = subject;
+                    }
+                } else {
+                    // Add new subject
+                    subjects.push(subject);
+                }
+                
+                // Save to localStorage
+                localStorage.setItem('studyAISubjects', JSON.stringify(subjects));
+                
+                // Also update study plan if it exists
+                updateStudyPlanSubjects();
+                
+                // Update UI
+                updateSubjectsGrid();
+                updateStats();
+                generateAIRecommendations();
+                
+                // Close modal
+                closeModal();
+                
+                // Show success message
+                alert(`Subject ${isEdit ? 'updated' : 'added'} successfully!`);
+            }
+            
+            // Delete subject with confirmation
+            function deleteSubjectConfirm(subjectId) {
+                const subject = subjects.find(s => s.id == subjectId);
+                if (!subject) return;
+                
+                if (confirm(`Are you sure you want to delete "${subject.name}"? This action cannot be undone.`)) {
+                    deleteSubject(subjectId);
+                }
+            }
+            
+            // Delete subject
+            function deleteSubject() {
+                const subjectId = modalSubjectId.value;
+                if (!subjectId) return;
+                
+                // Remove subject from array
+                subjects = subjects.filter(s => s.id != subjectId);
+                
+                // Save to localStorage
+                localStorage.setItem('studyAISubjects', JSON.stringify(subjects));
+                
+                // Also update study plan if it exists
+                updateStudyPlanSubjects();
+                
+                // Update UI
+                updateSubjectsGrid();
+                updateStats();
+                generateAIRecommendations();
+                
+                // Close modal
+                closeModal();
+                
+                // Show success message
+                alert('Subject deleted successfully!');
+            }
+            
+            // Update study plan subjects
+            function updateStudyPlanSubjects() {
+                const savedPlan = localStorage.getItem('studyAIPlan');
+                if (savedPlan) {
+                    const plan = JSON.parse(savedPlan);
+                    plan.subjects = subjects.map(subject => ({
+                        id: subject.id,
+                        name: subject.name,
+                        difficulty: subject.difficulty,
+                        priority: subject.priority,
+                        examDate: subject.examDate,
+                        daysToExam: calculateDaysToExam(subject.examDate)
+                    }));
+                    
+                    localStorage.setItem('studyAIPlan', JSON.stringify(plan));
+                }
+            }
+            
+            // Calculate days to exam
+            function calculateDaysToExam(examDateStr) {
+                const examDate = new Date(examDateStr);
+                const today = new Date();
+                const diffTime = examDate - today;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                return Math.max(diffDays, 1); // Minimum 1 day
+            }
+            
+            // Filter subjects based on search and filter
+            function filterSubjects() {
+                const searchTerm = searchInput.value.toLowerCase().trim();
+                
+                // Get all subject cards
+                const subjectCards = subjectsGrid.querySelectorAll('.subject-card');
+                
+                subjectCards.forEach(card => {
+                    const subjectId = parseInt(card.dataset.id);
+                    const subject = subjects.find(s => s.id === subjectId);
+                    
+                    if (!subject) {
+                        card.style.display = 'none';
+                        return;
+                    }
+                    
+                    let shouldShow = true;
+                    
+                    // Apply search filter
+                    if (searchTerm) {
+                        const matchesSearch = subject.name.toLowerCase().includes(searchTerm) ||
+                                            subject.category.toLowerCase().includes(searchTerm) ||
+                                            (subject.notes && subject.notes.toLowerCase().includes(searchTerm));
+                        shouldShow = shouldShow && matchesSearch;
+                    }
+                    
+                    // Apply type filter
+                    if (currentFilter === 'difficulty') {
+                        // Show only hard subjects
+                        shouldShow = shouldShow && subject.difficulty === 'hard';
+                    } else if (currentFilter === 'priority') {
+                        // Show only high priority subjects
+                        shouldShow = shouldShow && subject.priority === 'high';
+                    }
+                    
+                    card.style.display = shouldShow ? 'block' : 'none';
+                });
+                
+                // Check if any cards are visible
+                const visibleCards = Array.from(subjectCards).filter(card => card.style.display !== 'none');
+                
+                if (visibleCards.length === 0 && subjects.length > 0) {
+                    // Show no results message
+                    const noResults = document.createElement('div');
+                    noResults.className = 'empty-state';
+                    noResults.style.gridColumn = '1 / -1';
+                    noResults.innerHTML = `
+                        <i class="fas fa-search"></i>
+                        <h3>No subjects found</h3>
+                        <p>Try adjusting your search or filter criteria</p>
+                    `;
+                    
+                    // Remove existing no-results message if any
+                    const existingNoResults = subjectsGrid.querySelector('.no-results');
+                    if (existingNoResults) {
+                        existingNoResults.remove();
+                    }
+                    
+                    noResults.classList.add('no-results');
+                    subjectsGrid.appendChild(noResults);
+                } else {
+                    // Remove no-results message if it exists
+                    const existingNoResults = subjectsGrid.querySelector('.no-results');
+                    if (existingNoResults) {
+                        existingNoResults.remove();
+                    }
+                }
+            }
+            
+            // Check login status
+            function checkLoginStatus() {
+                const sessionData = localStorage.getItem('studyAISession');
+                
+                if (!sessionData) {
+                    // Not logged in, redirect to login
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                const session = JSON.parse(sessionData);
+                
+                // Check if session is still valid
+                const loginTime = new Date(session.loginTime);
+                const now = new Date();
+                const hoursSinceLogin = (now - loginTime) / (1000 * 60 * 60);
+                
+                // If session is older than 24 hours, require re-login
+                if (hoursSinceLogin > 24) {
+                    localStorage.removeItem('studyAISession');
+                    window.location.href = 'login.html';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

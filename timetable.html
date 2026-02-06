@@ -1,0 +1,2193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timetable | Smart AI Study Planner</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #7c3aed;
+            --primary-dark: #5b21b6;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --sidebar-bg: #111827;
+            --text: #f8fafc;
+            --text-light: #cbd5e1;
+            --border: #334155;
+            --success: #10b981;
+            --purple-light: #a78bfa;
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-bg);
+            padding: 25px 0;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 100;
+        }
+        
+        .sidebar-header {
+            padding: 0 25px 25px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .logo-icon {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-right: 10px;
+        }
+        
+        .logo-text {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .logo-subtitle {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-left: 50px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            margin-bottom: 20px;
+        }
+        
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--info));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 18px;
+            margin-right: 12px;
+        }
+        
+        .user-details h4 {
+            font-size: 16px;
+            margin-bottom: 3px;
+        }
+        
+        .user-details p {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 30px;
+        }
+        
+        .nav-item {
+            margin-bottom: 5px;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 25px;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-link i {
+            width: 20px;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+        }
+        
+        .nav-link.active {
+            background-color: rgba(124, 58, 237, 0.1);
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+        
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 20px 25px 0;
+            border-top: 1px solid var(--border);
+        }
+        
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px;
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .logout-btn i {
+            margin-right: 8px;
+        }
+        
+        .logout-btn:hover {
+            background-color: rgba(239, 68, 68, 0.2);
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 30px;
+            min-height: 100vh;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .header-left h1 {
+            font-size: 28px;
+            font-weight: 700;
+        }
+        
+        .header-left p {
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+        
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        /* Timetable Container */
+        .timetable-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Timetable Header */
+        .timetable-header {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .timetable-title h2 {
+            font-size: 26px;
+            margin-bottom: 10px;
+        }
+        
+        .timetable-title p {
+            color: var(--text-light);
+            max-width: 600px;
+        }
+        
+        .timetable-stats {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+        
+        /* Timetable Controls */
+        .timetable-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .view-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .view-btn {
+            padding: 10px 20px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .view-btn.active {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .view-btn:hover:not(.active) {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .date-navigation {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .date-display {
+            font-size: 18px;
+            font-weight: 600;
+            min-width: 200px;
+            text-align: center;
+        }
+        
+        .nav-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .nav-btn:hover {
+            background-color: rgba(124, 58, 237, 0.1);
+            border-color: var(--primary);
+        }
+        
+        .today-btn {
+            padding: 10px 20px;
+            background-color: var(--primary);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .today-btn:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        /* Filter Controls */
+        .filter-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .filter-label {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+        
+        .filter-select {
+            padding: 10px 15px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            min-width: 150px;
+        }
+        
+        /* Timetable Views */
+        .timetable-view {
+            display: none;
+        }
+        
+        .timetable-view.active {
+            display: block;
+        }
+        
+        /* Daily View */
+        .daily-view {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .daily-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            background-color: rgba(124, 58, 237, 0.1);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .daily-date {
+            font-size: 22px;
+            font-weight: 600;
+        }
+        
+        .daily-total {
+            font-size: 16px;
+            color: var(--text-light);
+        }
+        
+        .daily-total strong {
+            color: var(--primary);
+        }
+        
+        .daily-sessions {
+            padding: 20px;
+        }
+        
+        .time-slot {
+            display: flex;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: #2d3748;
+            transition: transform 0.3s;
+        }
+        
+        .time-slot:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .time-info {
+            width: 120px;
+            padding: 20px;
+            background-color: rgba(124, 58, 237, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-right: 1px solid var(--border);
+        }
+        
+        .time-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .time-duration {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+        
+        .session-details {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .session-main h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        
+        .session-topic {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+        
+        .session-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .subject-tag {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .subject-math {
+            background-color: rgba(59, 130, 246, 0.2);
+            color: var(--info);
+        }
+        
+        .subject-science {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: var(--secondary);
+        }
+        
+        .subject-english {
+            background-color: rgba(124, 58, 237, 0.2);
+            color: var(--primary);
+        }
+        
+        .subject-history {
+            background-color: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+        
+        .subject-break {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+        }
+        
+        .session-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        .status-upcoming {
+            background-color: var(--warning);
+        }
+        
+        .status-inprogress {
+            background-color: var(--info);
+        }
+        
+        .status-completed {
+            background-color: var(--success);
+        }
+        
+        .status-text {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        .session-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            background-color: rgba(124, 58, 237, 0.2);
+            color: var(--primary);
+        }
+        
+        /* Weekly View */
+        .weekly-view {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .weekly-header {
+            display: grid;
+            grid-template-columns: 100px repeat(7, 1fr);
+            background-color: rgba(124, 58, 237, 0.1);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .time-column {
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+            border-right: 1px solid var(--border);
+        }
+        
+        .day-header {
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+            border-right: 1px solid var(--border);
+        }
+        
+        .day-header:last-child {
+            border-right: none;
+        }
+        
+        .day-name {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .day-date {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+        
+        .weekly-grid {
+            display: grid;
+            grid-template-columns: 100px repeat(7, 1fr);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .time-cell {
+            padding: 10px;
+            text-align: center;
+            border-right: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .day-cell {
+            padding: 5px;
+            border-right: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            min-height: 80px;
+            position: relative;
+        }
+        
+        .day-cell:last-child {
+            border-right: none;
+        }
+        
+        .weekly-session {
+            position: absolute;
+            left: 5px;
+            right: 5px;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .weekly-session:hover {
+            transform: scale(1.02);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .session-title {
+            font-weight: 600;
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .session-time {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+        
+        /* Monthly View */
+        .monthly-view {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .monthly-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: rgba(124, 58, 237, 0.1);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .month-display {
+            font-size: 22px;
+            font-weight: 600;
+        }
+        
+        .monthly-grid {
+            padding: 20px;
+        }
+        
+        .weekdays-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            margin-bottom: 10px;
+        }
+        
+        .weekday {
+            text-align: center;
+            padding: 10px;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        
+        .calendar-day {
+            min-height: 120px;
+            background-color: #2d3748;
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .calendar-day:hover {
+            border-color: var(--primary);
+            background-color: rgba(124, 58, 237, 0.05);
+        }
+        
+        .calendar-day.today {
+            border-color: var(--primary);
+            background-color: rgba(124, 58, 237, 0.1);
+        }
+        
+        .calendar-day.other-month {
+            opacity: 0.5;
+        }
+        
+        .day-number {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+        
+        .day-number.today {
+            color: var(--primary);
+        }
+        
+        .day-sessions {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            max-height: 85px;
+            overflow-y: auto;
+        }
+        
+        .calendar-session {
+            font-size: 11px;
+            padding: 3px 6px;
+            border-radius: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+        
+        .empty-state i {
+            font-size: 60px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .empty-state h3 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+        
+        /* Action Buttons */
+        .timetable-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn-secondary {
+            background-color: #2d3748;
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #374151;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+        }
+        
+        .btn-success:hover {
+            background-color: #0da271;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .weekly-header,
+            .weekly-grid {
+                grid-template-columns: 80px repeat(7, 1fr);
+            }
+            
+            .time-cell {
+                font-size: 12px;
+            }
+        }
+        
+        @media (max-width: 900px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .timetable-header {
+                flex-direction: column;
+                gap: 20px;
+                align-items: flex-start;
+            }
+            
+            .timetable-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .weekly-header,
+            .weekly-grid {
+                grid-template-columns: 60px repeat(7, 1fr);
+            }
+            
+            .time-cell {
+                padding: 5px;
+                font-size: 11px;
+            }
+            
+            .day-header {
+                padding: 10px 5px;
+            }
+            
+            .day-name {
+                font-size: 14px;
+            }
+            
+            .day-date {
+                font-size: 12px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .calendar-grid {
+                grid-template-columns: repeat(1, 1fr);
+            }
+            
+            .weekdays-header {
+                display: none;
+            }
+            
+            .calendar-day {
+                min-height: auto;
+                padding: 15px;
+            }
+            
+            .day-number {
+                font-size: 16px;
+            }
+            
+            .time-slot {
+                flex-direction: column;
+            }
+            
+            .time-info {
+                width: 100%;
+                flex-direction: row;
+                justify-content: space-between;
+                padding: 15px;
+            }
+            
+            .session-details {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .session-meta {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .session-actions {
+                align-self: flex-end;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .weekly-view {
+                overflow-x: auto;
+            }
+            
+            .weekly-header,
+            .weekly-grid {
+                width: 800px;
+            }
+            
+            .view-controls {
+                flex-wrap: wrap;
+            }
+            
+            .timetable-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .filter-controls {
+                flex-direction: column;
+            }
+            
+            .filter-select {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div class="logo-text">StudyAI</div>
+            </div>
+            <div class="logo-subtitle">Smart AI Study Planner</div>
+        </div>
+        
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar">JS</div>
+            <div class="user-details">
+                <h4 id="userName">John Student</h4>
+                <p id="userClass">Grade 12</p>
+            </div>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="planner.html" class="nav-link">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Study Planner</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="timetable.html" class="nav-link active">
+                    <i class="fas fa-table"></i>
+                    <span>Daily Timetable</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="subjects.html" class="nav-link">
+                    <i class="fas fa-book"></i>
+                    <span>My Subjects</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="progress.html" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Progress</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="profile.html" class="nav-link">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <button class="logout-btn" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <h1>Study Timetable</h1>
+                <p>Your AI-generated study schedule with smart time allocation</p>
+            </div>
+            
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        
+        <!-- Timetable Container -->
+        <div class="timetable-container">
+            <!-- Timetable Header -->
+            <div class="timetable-header">
+                <div class="timetable-title">
+                    <h2>Personalized Study Schedule</h2>
+                    <p>This timetable is dynamically generated by AI based on your subjects, difficulty, priority, and exam dates. The schedule adapts to optimize your study efficiency.</p>
+                </div>
+                <div class="timetable-stats">
+                    <div class="stat">
+                        <div class="stat-value" id="totalHours">0</div>
+                        <div class="stat-label">Study Hours</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="completedSessions">0</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="upcomingSessions">0</div>
+                        <div class="stat-label">Upcoming</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Timetable Controls -->
+            <div class="timetable-controls">
+                <div class="view-controls">
+                    <button class="view-btn active" data-view="daily">Daily View</button>
+                    <button class="view-btn" data-view="weekly">Weekly View</button>
+                    <button class="view-btn" data-view="monthly">Monthly View</button>
+                </div>
+                
+                <div class="date-navigation">
+                    <button class="nav-btn" id="prevDay">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="date-display" id="currentDateDisplay">Monday, March 25, 2024</div>
+                    <button class="nav-btn" id="nextDay">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <button class="today-btn" id="todayBtn">Today</button>
+                </div>
+            </div>
+            
+            <!-- Filter Controls -->
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <div class="filter-label">Filter by Subject</div>
+                    <select class="filter-select" id="subjectFilter">
+                        <option value="all">All Subjects</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Physics">Physics</option>
+                        <option value="Chemistry">Chemistry</option>
+                        <option value="Biology">Biology</option>
+                        <option value="English">English</option>
+                        <option value="History">History</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <div class="filter-label">Filter by Status</div>
+                    <select class="filter-select" id="statusFilter">
+                        <option value="all">All Sessions</option>
+                        <option value="upcoming">Upcoming</option>
+                        <option value="inprogress">In Progress</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <div class="filter-label">Sort by</div>
+                    <select class="filter-select" id="sortFilter">
+                        <option value="time">Time</option>
+                        <option value="subject">Subject</option>
+                        <option value="duration">Duration</option>
+                        <option value="priority">Priority</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Daily Timetable View -->
+            <div class="timetable-view active" id="dailyView">
+                <div class="daily-view">
+                    <div class="daily-header">
+                        <div class="daily-date" id="dailyDate">Monday, March 25, 2024</div>
+                        <div class="daily-total">Total study time: <strong id="dailyTotalHours">4.5 hours</strong></div>
+                    </div>
+                    
+                    <div class="daily-sessions" id="dailySessions">
+                        <!-- Sessions will be loaded here -->
+                        <div class="empty-state" id="dailyEmptyState">
+                            <i class="fas fa-calendar-day"></i>
+                            <h3>No study sessions scheduled for today</h3>
+                            <p>Generate a study plan in the AI Study Planner to see your schedule here.</p>
+                            <button class="btn" id="goToPlanner" style="margin-top: 20px;">
+                                <i class="fas fa-robot"></i>
+                                Go to AI Planner
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Weekly Timetable View -->
+            <div class="timetable-view" id="weeklyView">
+                <div class="weekly-view">
+                    <div class="weekly-header">
+                        <div class="time-column">Time</div>
+                        <div class="day-header">
+                            <div class="day-name">Mon</div>
+                            <div class="day-date" id="weekDay1">Mar 25</div>
+                        </div>
+                        <div class="day-header">
+                            <div class="day-name">Tue</div>
+                            <div class="day-date" id="weekDay2">Mar 26</div>
+                        </div>
+                        <div class="day-header">
+                            <div class="day-name">Wed</div>
+                            <div class="day-date" id="weekDay3">Mar 27</div>
+                        </div>
+                        <div class="day-header">
+                            <div class="day-name">Thu</div>
+                            <div class="day-date" id="weekDay4">Mar 28</div>
+                        </div>
+                        <div class="day-header">
+                            <div class="day-name">Fri</div>
+                            <div class="day-date" id="weekDay5">Mar 29</div>
+                        </div>
+                        <div class="day-header">
+                            <div class="day-name">Sat</div>
+                            <div class="day-date" id="weekDay6">Mar 30</div>
+                        </div>
+                        <div class="day-header">
+                            <div class="day-name">Sun</div>
+                            <div class="day-date" id="weekDay7">Mar 31</div>
+                        </div>
+                    </div>
+                    
+                    <div class="weekly-grid" id="weeklyGrid">
+                        <!-- Weekly grid will be generated here -->
+                        <div class="empty-state" style="grid-column: 1 / -1; padding: 40px;">
+                            <i class="fas fa-calendar-week"></i>
+                            <h3>No weekly schedule available</h3>
+                            <p>Generate a study plan in the AI Study Planner to see your weekly schedule.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Monthly Timetable View -->
+            <div class="timetable-view" id="monthlyView">
+                <div class="monthly-view">
+                    <div class="monthly-header">
+                        <div class="month-display" id="monthDisplay">March 2024</div>
+                        <div class="date-navigation">
+                            <button class="nav-btn" id="prevMonth">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="today-btn" id="monthTodayBtn">Current Month</button>
+                            <button class="nav-btn" id="nextMonth">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="monthly-grid">
+                        <div class="weekdays-header">
+                            <div class="weekday">Sunday</div>
+                            <div class="weekday">Monday</div>
+                            <div class="weekday">Tuesday</div>
+                            <div class="weekday">Wednesday</div>
+                            <div class="weekday">Thursday</div>
+                            <div class="weekday">Friday</div>
+                            <div class="weekday">Saturday</div>
+                        </div>
+                        
+                        <div class="calendar-grid" id="calendarGrid">
+                            <!-- Calendar will be generated here -->
+                            <div class="empty-state" style="grid-column: 1 / -1; padding: 40px;">
+                                <i class="fas fa-calendar-alt"></i>
+                                <h3>No monthly schedule available</h3>
+                                <p>Generate a study plan in the AI Study Planner to see your monthly schedule.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Timetable Actions -->
+            <div class="timetable-actions">
+                <button class="btn-secondary" id="printTimetable">
+                    <i class="fas fa-print"></i>
+                    Print Timetable
+                </button>
+                <button class="btn" id="exportTimetable">
+                    <i class="fas fa-download"></i>
+                    Export as PDF
+                </button>
+                <button class="btn-success" id="markAsComplete">
+                    <i class="fas fa-check-circle"></i>
+                    Mark Today as Complete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in
+            checkLoginStatus();
+            
+            // DOM Elements
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.getElementById('menuToggle');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const userAvatar = document.getElementById('userAvatar');
+            const userName = document.getElementById('userName');
+            const userClass = document.getElementById('userClass');
+            
+            // Timetable Elements
+            const viewButtons = document.querySelectorAll('.view-btn');
+            const dailyView = document.getElementById('dailyView');
+            const weeklyView = document.getElementById('weeklyView');
+            const monthlyView = document.getElementById('monthlyView');
+            
+            // Date Navigation
+            const prevDayBtn = document.getElementById('prevDay');
+            const nextDayBtn = document.getElementById('nextDay');
+            const todayBtn = document.getElementById('todayBtn');
+            const currentDateDisplay = document.getElementById('currentDateDisplay');
+            const dailyDate = document.getElementById('dailyDate');
+            
+            // Weekly Elements
+            const weekDayElements = [
+                document.getElementById('weekDay1'),
+                document.getElementById('weekDay2'),
+                document.getElementById('weekDay3'),
+                document.getElementById('weekDay4'),
+                document.getElementById('weekDay5'),
+                document.getElementById('weekDay6'),
+                document.getElementById('weekDay7')
+            ];
+            
+            // Monthly Elements
+            const prevMonthBtn = document.getElementById('prevMonth');
+            const nextMonthBtn = document.getElementById('nextMonth');
+            const monthTodayBtn = document.getElementById('monthTodayBtn');
+            const monthDisplay = document.getElementById('monthDisplay');
+            const calendarGrid = document.getElementById('calendarGrid');
+            
+            // Filter Elements
+            const subjectFilter = document.getElementById('subjectFilter');
+            const statusFilter = document.getElementById('statusFilter');
+            const sortFilter = document.getElementById('sortFilter');
+            
+            // Stats Elements
+            const totalHours = document.getElementById('totalHours');
+            const completedSessions = document.getElementById('completedSessions');
+            const upcomingSessions = document.getElementById('upcomingSessions');
+            const dailyTotalHours = document.getElementById('dailyTotalHours');
+            
+            // Session Containers
+            const dailySessions = document.getElementById('dailySessions');
+            const dailyEmptyState = document.getElementById('dailyEmptyState');
+            const weeklyGrid = document.getElementById('weeklyGrid');
+            
+            // Action Buttons
+            const goToPlanner = document.getElementById('goToPlanner');
+            const printTimetable = document.getElementById('printTimetable');
+            const exportTimetable = document.getElementById('exportTimetable');
+            const markAsComplete = document.getElementById('markAsComplete');
+            
+            // Current Date
+            let currentDate = new Date();
+            let currentMonth = currentDate.getMonth();
+            let currentYear = currentDate.getFullYear();
+            
+            // Study Data
+            let studyPlan = null;
+            let studySessions = [];
+            let completedSessionsList = JSON.parse(localStorage.getItem('studyAICompletedSessions') || '[]');
+            
+            // Load user data
+            loadUserData();
+            
+            // Load study plan data
+            loadStudyPlan();
+            
+            // Toggle sidebar on mobile
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+            });
+            
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(event) {
+                if (window.innerWidth <= 900 && 
+                    !sidebar.contains(event.target) && 
+                    !menuToggle.contains(event.target) && 
+                    sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                }
+            });
+            
+            // Logout functionality
+            logoutBtn.addEventListener('click', function() {
+                // Clear session
+                localStorage.removeItem('studyAISession');
+                
+                // Redirect to login page
+                window.location.href = 'login.html';
+            });
+            
+            // View Switching
+            viewButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    viewButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Get view type
+                    const viewType = this.getAttribute('data-view');
+                    
+                    // Hide all views
+                    dailyView.classList.remove('active');
+                    weeklyView.classList.remove('active');
+                    monthlyView.classList.remove('active');
+                    
+                    // Show selected view
+                    if (viewType === 'daily') {
+                        dailyView.classList.add('active');
+                        updateDailyView();
+                    } else if (viewType === 'weekly') {
+                        weeklyView.classList.add('active');
+                        updateWeeklyView();
+                    } else if (viewType === 'monthly') {
+                        monthlyView.classList.add('active');
+                        updateMonthlyView();
+                    }
+                });
+            });
+            
+            // Date Navigation
+            prevDayBtn.addEventListener('click', function() {
+                currentDate.setDate(currentDate.getDate() - 1);
+                updateDateDisplay();
+                updateDailyView();
+            });
+            
+            nextDayBtn.addEventListener('click', function() {
+                currentDate.setDate(currentDate.getDate() + 1);
+                updateDateDisplay();
+                updateDailyView();
+            });
+            
+            todayBtn.addEventListener('click', function() {
+                currentDate = new Date();
+                updateDateDisplay();
+                updateDailyView();
+            });
+            
+            // Monthly Navigation
+            prevMonthBtn.addEventListener('click', function() {
+                currentMonth--;
+                if (currentMonth < 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                }
+                updateMonthDisplay();
+                updateMonthlyView();
+            });
+            
+            nextMonthBtn.addEventListener('click', function() {
+                currentMonth++;
+                if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                }
+                updateMonthDisplay();
+                updateMonthlyView();
+            });
+            
+            monthTodayBtn.addEventListener('click', function() {
+                const now = new Date();
+                currentMonth = now.getMonth();
+                currentYear = now.getFullYear();
+                updateMonthDisplay();
+                updateMonthlyView();
+            });
+            
+            // Filter Changes
+            subjectFilter.addEventListener('change', updateDailyView);
+            statusFilter.addEventListener('change', updateDailyView);
+            sortFilter.addEventListener('change', updateDailyView);
+            
+            // Action Buttons
+            goToPlanner.addEventListener('click', function() {
+                window.location.href = 'planner.html';
+            });
+            
+            printTimetable.addEventListener('click', function() {
+                // In a real app, this would open print dialog
+                alert('Print functionality would open the print dialog. For now, you can use Ctrl+P to print the page.');
+            });
+            
+            exportTimetable.addEventListener('click', function() {
+                // In a real app, this would generate and download PDF
+                alert('PDF export functionality would generate a downloadable PDF file.');
+                
+                // Simulate download
+                const originalText = exportTimetable.innerHTML;
+                exportTimetable.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Exporting...';
+                
+                setTimeout(() => {
+                    exportTimetable.innerHTML = originalText;
+                    alert('Timetable exported successfully!');
+                }, 1500);
+            });
+            
+            markAsComplete.addEventListener('click', function() {
+                markTodayAsComplete();
+            });
+            
+            // Update date display
+            function updateDateDisplay() {
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                const dateString = currentDate.toLocaleDateString('en-US', options);
+                
+                currentDateDisplay.textContent = dateString;
+                dailyDate.textContent = dateString;
+                
+                // Update weekly view dates if needed
+                if (weeklyView.classList.contains('active')) {
+                    updateWeeklyView();
+                }
+            }
+            
+            // Update month display
+            function updateMonthDisplay() {
+                const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                    'July', 'August', 'September', 'October', 'November', 'December'];
+                
+                monthDisplay.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+            }
+            
+            // Load user data
+            function loadUserData() {
+                // Get user data from localStorage
+                const userData = localStorage.getItem('studyAIUser');
+                const sessionData = localStorage.getItem('studyAISession');
+                
+                if (userData) {
+                    const user = JSON.parse(userData);
+                    
+                    // Set user name
+                    userName.textContent = user.name;
+                    
+                    // Set user class
+                    const classMap = {
+                        '9': 'Grade 9',
+                        '10': 'Grade 10',
+                        '11': 'Grade 11',
+                        '12': 'Grade 12',
+                        'college': 'College',
+                        'university': 'University',
+                        'other': 'Other'
+                    };
+                    userClass.textContent = classMap[user.class] || `Grade ${user.class}`;
+                    
+                    // Set avatar initials
+                    const nameParts = user.name.split(' ');
+                    const initials = nameParts.length > 1 
+                        ? (nameParts[0][0] + nameParts[1][0]).toUpperCase()
+                        : nameParts[0].substring(0, 2).toUpperCase();
+                    userAvatar.textContent = initials;
+                }
+            }
+            
+            // Load study plan
+            function loadStudyPlan() {
+                const savedPlan = localStorage.getItem('studyAIPlan');
+                
+                if (savedPlan) {
+                    studyPlan = JSON.parse(savedPlan);
+                    
+                    // Process study sessions
+                    processStudySessions();
+                    
+                    // Update stats
+                    updateStats();
+                    
+                    // Update views
+                    updateDateDisplay();
+                    updateMonthDisplay();
+                    updateDailyView();
+                } else {
+                    // No study plan exists
+                    dailyEmptyState.style.display = 'block';
+                }
+            }
+            
+            // Process study sessions from plan
+            function processStudySessions() {
+                if (!studyPlan || !studyPlan.dailyPlans) return;
+                
+                studySessions = [];
+                
+                // Convert daily plans to sessions
+                studyPlan.dailyPlans.forEach(dayPlan => {
+                    const dayDate = new Date(dayPlan.date);
+                    
+                    dayPlan.sessions.forEach(session => {
+                        // Determine session status
+                        const sessionDate = new Date(dayDate);
+                        const sessionTime = session.time;
+                        
+                        // Parse time
+                        let [time, modifier] = sessionTime.split(' ');
+                        let [hours, minutes] = time.split(':').map(Number);
+                        
+                        if (modifier === 'PM' && hours < 12) hours += 12;
+                        if (modifier === 'AM' && hours === 12) hours = 0;
+                        
+                        sessionDate.setHours(hours, minutes, 0, 0);
+                        
+                        // Determine status
+                        const now = new Date();
+                        let status = 'upcoming';
+                        
+                        if (completedSessionsList.includes(sessionDate.toISOString())) {
+                            status = 'completed';
+                        } else if (sessionDate <= now && sessionDate >= new Date(now.getTime() - 2 * 60 * 60 * 1000)) {
+                            status = 'inprogress';
+                        } else if (sessionDate < now) {
+                            status = 'completed'; // Auto-complete past sessions
+                        }
+                        
+                        // Get subject color class
+                        const subjectClass = getSubjectClass(session.subject);
+                        
+                        studySessions.push({
+                            id: `${dayPlan.day}-${session.time}-${session.subject}`,
+                            day: dayPlan.day,
+                            date: sessionDate,
+                            time: session.time,
+                            subject: session.subject,
+                            topic: session.topic,
+                            duration: session.duration,
+                            status: status,
+                            subjectClass: subjectClass,
+                            dayDate: dayDate
+                        });
+                    });
+                });
+                
+                // Sort sessions by date
+                studySessions.sort((a, b) => a.date - b.date);
+            }
+            
+            // Get CSS class for subject
+            function getSubjectClass(subjectName) {
+                const subject = subjectName.toLowerCase();
+                
+                if (subject.includes('math')) return 'subject-math';
+                if (subject.includes('physics') || subject.includes('science')) return 'subject-science';
+                if (subject.includes('english') || subject.includes('literature')) return 'subject-english';
+                if (subject.includes('history') || subject.includes('social')) return 'subject-history';
+                if (subject.includes('break')) return 'subject-break';
+                
+                return 'subject-math'; // Default
+            }
+            
+            // Update stats
+            function updateStats() {
+                if (!studySessions.length) return;
+                
+                // Calculate total study hours
+                const totalMinutes = studySessions.reduce((sum, session) => {
+                    return session.subject === 'Break' ? sum : sum + session.duration;
+                }, 0);
+                const totalHoursValue = (totalMinutes / 60).toFixed(1);
+                totalHours.textContent = totalHoursValue;
+                
+                // Calculate completed sessions
+                const completedCount = studySessions.filter(s => s.status === 'completed').length;
+                completedSessions.textContent = completedCount;
+                
+                // Calculate upcoming sessions
+                const upcomingCount = studySessions.filter(s => s.status === 'upcoming').length;
+                upcomingSessions.textContent = upcomingCount;
+            }
+            
+            // Update daily view
+            function updateDailyView() {
+                if (!studySessions.length) return;
+                
+                // Format current date for comparison
+                const currentDateStr = currentDate.toDateString();
+                
+                // Filter sessions for current day
+                let daySessions = studySessions.filter(session => {
+                    return session.dayDate.toDateString() === currentDateStr;
+                });
+                
+                // Apply filters
+                const subjectFilterValue = subjectFilter.value;
+                const statusFilterValue = statusFilter.value;
+                
+                if (subjectFilterValue !== 'all') {
+                    daySessions = daySessions.filter(session => 
+                        session.subject === subjectFilterValue || session.subject === 'Break'
+                    );
+                }
+                
+                if (statusFilterValue !== 'all') {
+                    daySessions = daySessions.filter(session => session.status === statusFilterValue);
+                }
+                
+                // Apply sorting
+                const sortValue = sortFilter.value;
+                daySessions.sort((a, b) => {
+                    if (sortValue === 'time') {
+                        return a.time.localeCompare(b.time);
+                    } else if (sortValue === 'subject') {
+                        return a.subject.localeCompare(b.subject);
+                    } else if (sortValue === 'duration') {
+                        return b.duration - a.duration;
+                    } else if (sortValue === 'priority') {
+                        // Place high priority subjects first (based on subject name for demo)
+                        const priorityOrder = { 'Mathematics': 1, 'Physics': 2, 'Chemistry': 3, 'Biology': 4, 'English': 5, 'History': 6, 'Break': 7 };
+                        return (priorityOrder[a.subject] || 99) - (priorityOrder[b.subject] || 99);
+                    }
+                    return 0;
+                });
+                
+                // Update daily total hours
+                const dayMinutes = daySessions.reduce((sum, session) => {
+                    return session.subject === 'Break' ? sum : sum + session.duration;
+                }, 0);
+                const dayHours = (dayMinutes / 60).toFixed(1);
+                dailyTotalHours.textContent = `${dayHours} hours`;
+                
+                // Clear current sessions
+                dailySessions.innerHTML = '';
+                
+                // Check if there are sessions for this day
+                if (daySessions.length === 0) {
+                    const emptyMsg = document.createElement('div');
+                    emptyMsg.className = 'empty-state';
+                    emptyMsg.innerHTML = `
+                        <i class="fas fa-calendar-times"></i>
+                        <h3>No sessions match your filters</h3>
+                        <p>Try changing your filter settings or check another day.</p>
+                    `;
+                    dailySessions.appendChild(emptyMsg);
+                    return;
+                }
+                
+                // Hide empty state
+                dailyEmptyState.style.display = 'none';
+                
+                // Add sessions to daily view
+                daySessions.forEach(session => {
+                    const timeSlot = document.createElement('div');
+                    timeSlot.className = 'time-slot';
+                    
+                    // Format duration
+                    const hours = Math.floor(session.duration / 60);
+                    const minutes = session.duration % 60;
+                    let durationText = '';
+                    if (hours > 0) durationText += `${hours}h `;
+                    if (minutes > 0) durationText += `${minutes}m`;
+                    
+                    // Status dot
+                    let statusDotClass = 'status-upcoming';
+                    let statusText = 'Upcoming';
+                    
+                    if (session.status === 'inprogress') {
+                        statusDotClass = 'status-inprogress';
+                        statusText = 'In Progress';
+                    } else if (session.status === 'completed') {
+                        statusDotClass = 'status-completed';
+                        statusText = 'Completed';
+                    }
+                    
+                    timeSlot.innerHTML = `
+                        <div class="time-info">
+                            <div class="time-value">${session.time}</div>
+                            <div class="time-duration">${durationText}</div>
+                        </div>
+                        <div class="session-details">
+                            <div class="session-main">
+                                <h3>${session.subject}</h3>
+                                <p class="session-topic">${session.topic}</p>
+                            </div>
+                            <div class="session-meta">
+                                <span class="subject-tag ${session.subjectClass}">${session.subject}</span>
+                                <div class="session-status">
+                                    <span class="status-dot ${statusDotClass}"></span>
+                                    <span class="status-text">${statusText}</span>
+                                </div>
+                            </div>
+                            <div class="session-actions">
+                                <button class="action-btn toggle-status" title="Toggle Status">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="action-btn edit-session" title="Edit Session">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    dailySessions.appendChild(timeSlot);
+                    
+                    // Add event listeners to action buttons
+                    const toggleBtn = timeSlot.querySelector('.toggle-status');
+                    const editBtn = timeSlot.querySelector('.edit-session');
+                    
+                    toggleBtn.addEventListener('click', function() {
+                        toggleSessionStatus(session);
+                    });
+                    
+                    editBtn.addEventListener('click', function() {
+                        editSession(session);
+                    });
+                });
+            }
+            
+            // Update weekly view
+            function updateWeeklyView() {
+                if (!studySessions.length) return;
+                
+                // Calculate start of week (Monday)
+                const startOfWeek = new Date(currentDate);
+                const day = startOfWeek.getDay();
+                const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1); // Adjust for Sunday
+                startOfWeek.setDate(diff);
+                
+                // Update week day headers
+                for (let i = 0; i < 7; i++) {
+                    const dayDate = new Date(startOfWeek);
+                    dayDate.setDate(startOfWeek.getDate() + i);
+                    
+                    const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    
+                    weekDayElements[i].textContent = `${monthNames[dayDate.getMonth()]} ${dayDate.getDate()}`;
+                }
+                
+                // Clear weekly grid
+                weeklyGrid.innerHTML = '';
+                
+                // Create time slots (8 AM to 10 PM)
+                for (let hour = 8; hour <= 22; hour++) {
+                    // Time cell
+                    const timeCell = document.createElement('div');
+                    timeCell.className = 'time-cell';
+                    
+                    const hour12 = hour > 12 ? hour - 12 : hour;
+                    const ampm = hour >= 12 ? 'PM' : 'AM';
+                    timeCell.textContent = `${hour12}:00 ${ampm}`;
+                    
+                    weeklyGrid.appendChild(timeCell);
+                    
+                    // Day cells for this time
+                    for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
+                        const dayCell = document.createElement('div');
+                        dayCell.className = 'day-cell';
+                        dayCell.dataset.day = dayIndex;
+                        dayCell.dataset.hour = hour;
+                        
+                        weeklyGrid.appendChild(dayCell);
+                    }
+                }
+                
+                // Add sessions to weekly grid
+                studySessions.forEach(session => {
+                    // Skip break sessions for weekly view
+                    if (session.subject === 'Break') return;
+                    
+                    // Calculate which day of the week this session is on
+                    const sessionDate = session.dayDate;
+                    const startOfWeekDate = new Date(startOfWeek);
+                    
+                    // Calculate day difference
+                    const diffTime = sessionDate - startOfWeekDate;
+                    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                    
+                    // Check if session is within this week
+                    if (diffDays >= 0 && diffDays < 7) {
+                        // Parse session time
+                        const [time, modifier] = session.time.split(' ');
+                        let [hours, minutes] = time.split(':').map(Number);
+                        
+                        if (modifier === 'PM' && hours < 12) hours += 12;
+                        if (modifier === 'AM' && hours === 12) hours = 0;
+                        
+                        // Calculate position
+                        const hourPosition = hours - 7; // Starting from 8 AM (index 1)
+                        const dayPosition = diffDays + 1; // +1 for time column
+                        
+                        // Find the cell for this session
+                        const cellIndex = (hourPosition * 8) + dayPosition; // 8 columns (time + 7 days)
+                        const dayCell = weeklyGrid.children[cellIndex];
+                        
+                        if (dayCell && dayCell.classList.contains('day-cell')) {
+                            // Create session element
+                            const sessionElement = document.createElement('div');
+                            sessionElement.className = 'weekly-session';
+                            sessionElement.style.backgroundColor = getSubjectColor(session.subject);
+                            sessionElement.style.top = `${(minutes / 60) * 80}px`; // Position within hour
+                            sessionElement.style.height = `${Math.max((session.duration / 60) * 1.33, 30)}px`; // Height based on duration
+                            
+                            // Truncate topic if too long
+                            const shortTopic = session.topic.length > 20 
+                                ? session.topic.substring(0, 20) + '...' 
+                                : session.topic;
+                            
+                            sessionElement.innerHTML = `
+                                <div class="session-title">${session.subject}</div>
+                                <div class="session-time">${session.time}</div>
+                            `;
+                            
+                            sessionElement.addEventListener('click', function() {
+                                viewSessionDetails(session);
+                            });
+                            
+                            dayCell.appendChild(sessionElement);
+                        }
+                    }
+                });
+            }
+            
+            // Get color for subject
+            function getSubjectColor(subjectName) {
+                const colors = {
+                    'Mathematics': 'rgba(59, 130, 246, 0.7)',
+                    'Physics': 'rgba(16, 185, 129, 0.7)',
+                    'Chemistry': 'rgba(124, 58, 237, 0.7)',
+                    'Biology': 'rgba(245, 158, 11, 0.7)',
+                    'English': 'rgba(239, 68, 68, 0.7)',
+                    'History': 'rgba(139, 92, 246, 0.7)'
+                };
+                
+                return colors[subjectName] || 'rgba(124, 58, 237, 0.7)';
+            }
+            
+            // Update monthly view
+            function updateMonthlyView() {
+                // Clear calendar grid
+                calendarGrid.innerHTML = '';
+                
+                // Get first day of month
+                const firstDay = new Date(currentYear, currentMonth, 1);
+                const lastDay = new Date(currentYear, currentMonth + 1, 0);
+                
+                // Get day of week for first day (0 = Sunday, 1 = Monday, etc.)
+                let firstDayIndex = firstDay.getDay();
+                
+                // Adjust to start week on Monday
+                if (firstDayIndex === 0) firstDayIndex = 6;
+                else firstDayIndex--;
+                
+                // Days in month
+                const daysInMonth = lastDay.getDate();
+                
+                // Previous month days
+                const prevMonthLastDay = new Date(currentYear, currentMonth, 0).getDate();
+                
+                // Add previous month days
+                for (let i = firstDayIndex - 1; i >= 0; i--) {
+                    const day = document.createElement('div');
+                    day.className = 'calendar-day other-month';
+                    
+                    const dayNumber = prevMonthLastDay - i;
+                    day.innerHTML = `
+                        <div class="day-number">${dayNumber}</div>
+                        <div class="day-sessions"></div>
+                    `;
+                    
+                    calendarGrid.appendChild(day);
+                }
+                
+                // Current month days
+                const today = new Date();
+                const isTodayMonth = today.getMonth() === currentMonth && today.getFullYear() === currentYear;
+                
+                for (let i = 1; i <= daysInMonth; i++) {
+                    const day = document.createElement('div');
+                    const isToday = isTodayMonth && i === today.getDate();
+                    
+                    day.className = `calendar-day ${isToday ? 'today' : ''}`;
+                    
+                    day.innerHTML = `
+                        <div class="day-number ${isToday ? 'today' : ''}">${i}</div>
+                        <div class="day-sessions" id="day-${i}"></div>
+                    `;
+                    
+                    calendarGrid.appendChild(day);
+                    
+                    // Add sessions for this day if any
+                    addSessionsToCalendarDay(i, day);
+                }
+                
+                // Next month days
+                const totalCells = 42; // 6 weeks * 7 days
+                const nextMonthDays = totalCells - (firstDayIndex + daysInMonth);
+                
+                for (let i = 1; i <= nextMonthDays; i++) {
+                    const day = document.createElement('div');
+                    day.className = 'calendar-day other-month';
+                    
+                    day.innerHTML = `
+                        <div class="day-number">${i}</div>
+                        <div class="day-sessions"></div>
+                    `;
+                    
+                    calendarGrid.appendChild(day);
+                }
+            }
+            
+            // Add sessions to calendar day
+            function addSessionsToCalendarDay(dayNumber, dayElement) {
+                if (!studySessions.length) return;
+                
+                const dayDate = new Date(currentYear, currentMonth, dayNumber);
+                const daySessions = studySessions.filter(session => {
+                    return session.dayDate.toDateString() === dayDate.toDateString();
+                });
+                
+                // Limit to 3 sessions for display
+                const displaySessions = daySessions.slice(0, 3);
+                
+                displaySessions.forEach(session => {
+                    if (session.subject === 'Break') return;
+                    
+                    const sessionElement = document.createElement('div');
+                    sessionElement.className = 'calendar-session';
+                    sessionElement.style.backgroundColor = getSubjectColor(session.subject);
+                    sessionElement.textContent = `${session.subject}: ${session.time}`;
+                    
+                    sessionElement.addEventListener('click', function() {
+                        viewSessionDetails(session);
+                    });
+                    
+                    dayElement.querySelector('.day-sessions').appendChild(sessionElement);
+                });
+                
+                // Show more indicator if there are more sessions
+                if (daySessions.length > 3) {
+                    const moreElement = document.createElement('div');
+                    moreElement.className = 'calendar-session';
+                    moreElement.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                    moreElement.textContent = `+${daySessions.length - 3} more`;
+                    
+                    dayElement.querySelector('.day-sessions').appendChild(moreElement);
+                }
+            }
+            
+            // Toggle session status
+            function toggleSessionStatus(session) {
+                const sessionDateStr = session.date.toISOString();
+                const index = completedSessionsList.indexOf(sessionDateStr);
+                
+                if (index === -1) {
+                    // Mark as completed
+                    completedSessionsList.push(sessionDateStr);
+                    session.status = 'completed';
+                } else {
+                    // Mark as upcoming
+                    completedSessionsList.splice(index, 1);
+                    session.status = 'upcoming';
+                }
+                
+                // Save to localStorage
+                localStorage.setItem('studyAICompletedSessions', JSON.stringify(completedSessionsList));
+                
+                // Update views
+                updateStats();
+                updateDailyView();
+            }
+            
+            // Edit session
+            function editSession(session) {
+                alert(`Edit session: ${session.subject} at ${session.time}\n\nIn a full implementation, this would open an edit form.`);
+            }
+            
+            // View session details
+            function viewSessionDetails(session) {
+                const durationHours = Math.floor(session.duration / 60);
+                const durationMinutes = session.duration % 60;
+                let durationText = '';
+                if (durationHours > 0) durationText += `${durationHours} hours `;
+                if (durationMinutes > 0) durationText += `${durationMinutes} minutes`;
+                
+                alert(`Session Details:\n\n` +
+                      `Subject: ${session.subject}\n` +
+                      `Topic: ${session.topic}\n` +
+                      `Time: ${session.time}\n` +
+                      `Duration: ${durationText}\n` +
+                      `Status: ${session.status}\n` +
+                      `Day: ${session.dayDate.toLocaleDateString()}`);
+            }
+            
+            // Mark today as complete
+            function markTodayAsComplete() {
+                const todayStr = currentDate.toDateString();
+                let markedCount = 0;
+                
+                studySessions.forEach(session => {
+                    if (session.dayDate.toDateString() === todayStr && session.status !== 'completed') {
+                        const sessionDateStr = session.date.toISOString();
+                        
+                        if (!completedSessionsList.includes(sessionDateStr)) {
+                            completedSessionsList.push(sessionDateStr);
+                            session.status = 'completed';
+                            markedCount++;
+                        }
+                    }
+                });
+                
+                if (markedCount > 0) {
+                    // Save to localStorage
+                    localStorage.setItem('studyAICompletedSessions', JSON.stringify(completedSessionsList));
+                    
+                    // Update views
+                    updateStats();
+                    updateDailyView();
+                    
+                    alert(`Marked ${markedCount} sessions as completed for today!`);
+                } else {
+                    alert('All sessions for today are already marked as completed!');
+                }
+            }
+            
+            // Check login status
+            function checkLoginStatus() {
+                const sessionData = localStorage.getItem('studyAISession');
+                
+                if (!sessionData) {
+                    // Not logged in, redirect to login
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                const session = JSON.parse(sessionData);
+                
+                // Check if session is still valid
+                const loginTime = new Date(session.loginTime);
+                const now = new Date();
+                const hoursSinceLogin = (now - loginTime) / (1000 * 60 * 60);
+                
+                // If session is older than 24 hours, require re-login
+                if (hoursSinceLogin > 24) {
+                    localStorage.removeItem('studyAISession');
+                    window.location.href = 'login.html';
+                }
+            }
+            
+            // Initialize demo data if no plan exists
+            function initializeDemoData() {
+                const savedPlan = localStorage.getItem('studyAIPlan');
+                
+                if (!savedPlan) {
+                    // Create demo plan
+                    const demoPlan = {
+                        subjects: [
+                            { id: 1, name: 'Mathematics', difficulty: 'hard', priority: 'high', examDate: '2024-04-15', daysToExam: 21 },
+                            { id: 2, name: 'Physics', difficulty: 'hard', priority: 'high', examDate: '2024-04-10', daysToExam: 16 },
+                            { id: 3, name: 'Chemistry', difficulty: 'medium', priority: 'medium', examDate: '2024-04-20', daysToExam: 26 },
+                            { id: 4, name: 'English', difficulty: 'easy', priority: 'medium', examDate: '2024-04-25', daysToExam: 31 },
+                            { id: 5, name: 'Biology', difficulty: 'medium', priority: 'low', examDate: '2024-05-01', daysToExam: 37 },
+                            { id: 6, name: 'History', difficulty: 'easy', priority: 'low', examDate: '2024-05-05', daysToExam: 41 }
+                        ],
+                        preferences: {
+                            dailyHours: 4.5,
+                            startDate: new Date().toISOString().split('T')[0],
+                            daysPerWeek: 7,
+                            preferredStudyTime: 'afternoon'
+                        },
+                        generatedDate: new Date().toISOString(),
+                        totalDays: 30,
+                        dailyPlans: []
+                    };
+                    
+                    // Generate 7 days of demo sessions
+                    for (let day = 1; day <= 7; day++) {
+                        const dayDate = new Date();
+                        dayDate.setDate(dayDate.getDate() + (day - 1));
+                        
+                        const dayPlan = {
+                            day: day,
+                            date: dayDate,
+                            sessions: []
+                        };
+                        
+                        // Add sessions for this day
+                        const sessions = [
+                            { time: '09:00 AM', subject: 'Mathematics', topic: 'Calculus - Differentiation', duration: 90 },
+                            { time: '10:30 AM', subject: 'Break', topic: 'Short break', duration: 15 },
+                            { time: '02:00 PM', subject: 'Physics', topic: 'Thermodynamics - Laws', duration: 60 },
+                            { time: '04:00 PM', subject: 'Chemistry', topic: 'Organic Reactions', duration: 75 }
+                        ];
+                        
+                        // Vary sessions based on day
+                        if (day % 2 === 0) {
+                            sessions.splice(2, 0, { time: '12:00 PM', subject: 'English', topic: 'Literature Analysis', duration: 45 });
+                        }
+                        
+                        if (day % 3 === 0) {
+                            sessions.push({ time: '06:00 PM', subject: 'Biology', topic: 'Cell Structure', duration: 45 });
+                        }
+                        
+                        dayPlan.sessions = sessions;
+                        demoPlan.dailyPlans.push(dayPlan);
+                    }
+                    
+                    localStorage.setItem('studyAIPlan', JSON.stringify(demoPlan));
+                    
+                    // Reload plan
+                    loadStudyPlan();
+                }
+            }
+            
+            // Initialize demo data on first load
+            initializeDemoData();
+        });
+    </script>
+</body>
+</html>

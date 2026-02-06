@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Smart AI Study Planner</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #7c3aed;
+            --primary-dark: #5b21b6;
+            --secondary: #10b981;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+            --text-light: #cbd5e1;
+            --border: #334155;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(124, 58, 237, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 20%);
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            min-height: 90vh;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Left Panel - Login Form */
+        .left-panel {
+            flex: 1;
+            background-color: var(--card-bg);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+        
+        .logo-icon {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-right: 15px;
+        }
+        
+        .logo-text {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .left-panel h2 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+        
+        .left-panel .subtitle {
+            color: var(--text-light);
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            background-color: #2d3748;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            cursor: pointer;
+        }
+        
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .remember {
+            display: flex;
+            align-items: center;
+        }
+        
+        .remember input {
+            margin-right: 8px;
+            accent-color: var(--primary);
+        }
+        
+        .forgot-password {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        .btn-google {
+            background-color: #2d3748;
+            border: 1px solid var(--border);
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-google i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        .btn-google:hover {
+            background-color: #374151;
+        }
+        
+        .register-link {
+            text-align: center;
+            margin-top: 25px;
+            color: var(--text-light);
+        }
+        
+        .register-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            color: var(--danger);
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .success-message {
+            color: var(--success);
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        /* Right Panel - Info and Features */
+        .right-panel {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .right-panel::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            top: -150px;
+            right: -100px;
+        }
+        
+        .right-panel::after {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            bottom: -80px;
+            left: -80px;
+        }
+        
+        .right-panel h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .right-panel p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            z-index: 1;
+            position: relative;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .features {
+            list-style: none;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .features li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .features i {
+            background-color: rgba(255, 255, 255, 0.2);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 14px;
+        }
+        
+        .user-count {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 30px;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .user-count i {
+            margin-right: 10px;
+            color: var(--secondary);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+                min-height: auto;
+            }
+            
+            .left-panel {
+                padding: 30px;
+            }
+            
+            .right-panel {
+                padding: 30px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .left-panel, .right-panel {
+                padding: 20px;
+            }
+            
+            .right-panel h2 {
+                font-size: 28px;
+            }
+            
+            .left-panel h2 {
+                font-size: 26px;
+            }
+            
+            .remember-forgot {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .forgot-password {
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Panel with Login Form -->
+        <div class="left-panel">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div class="logo-text">StudyAI</div>
+            </div>
+            
+            <h2>Welcome Back</h2>
+            <p class="subtitle">Sign in to access your personalized AI study plan</p>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+                    </div>
+                    <div class="error-message" id="emailError">Please enter a valid email address</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
+                        <i class="fas fa-eye password-toggle" id="togglePassword"></i>
+                    </div>
+                    <div class="error-message" id="passwordError">Please enter your password</div>
+                </div>
+                
+                <div class="remember-forgot">
+                    <div class="remember">
+                        <input type="checkbox" id="rememberMe">
+                        <label for="rememberMe">Remember me</label>
+                    </div>
+                    <a href="#" class="forgot-password">Forgot password?</a>
+                </div>
+                
+                <button type="submit" class="btn btn-block" id="loginBtn">
+                    <span id="btnText">Sign In</span>
+                    <i class="fas fa-spinner fa-spin" id="btnSpinner" style="display: none;"></i>
+                </button>
+                
+                <div class="success-message" id="successMessage">Login successful! Redirecting...</div>
+                
+                <div class="register-link">
+                    Don't have an account? <a href="register.html">Create one here</a>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Right Panel with Info -->
+        <div class="right-panel">
+            <h2>Smart AI Study Planner</h2>
+            <p>Get back to your personalized study schedule, track your progress, and optimize your learning with AI-powered recommendations.</p>
+            
+            <ul class="features">
+                <li><i class="fas fa-calendar-check"></i> Dynamic Daily Study Timetable</li>
+                <li><i class="fas fa-chart-line"></i> Progress Tracking & Analytics</li>
+                <li><i class="fas fa-robot"></i> AI-Powered Study Recommendations</li>
+                <li><i class="fas fa-bell"></i> Exam Countdown & Notifications</li>
+                <li><i class="fas fa-moon"></i> Dark Theme for Better Focus</li>
+            </ul>
+            
+            <div class="user-count">
+                <i class="fas fa-users"></i>
+                <span>Joined by <strong>12,458</strong> students worldwide</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const loginForm = document.getElementById('loginForm');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const togglePassword = document.getElementById('togglePassword');
+            const loginBtn = document.getElementById('loginBtn');
+            const btnText = document.getElementById('btnText');
+            const btnSpinner = document.getElementById('btnSpinner');
+            const emailError = document.getElementById('emailError');
+            const passwordError = document.getElementById('passwordError');
+            const successMessage = document.getElementById('successMessage');
+            const rememberMe = document.getElementById('rememberMe');
+            
+            // Check if user is already logged in
+            checkLoginStatus();
+            
+            // Toggle password visibility
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+            
+            // Load saved email if "Remember me" was checked previously
+            const savedEmail = localStorage.getItem('studyAIRememberEmail');
+            if (savedEmail) {
+                emailInput.value = savedEmail;
+                rememberMe.checked = true;
+            }
+            
+            // Form validation
+            function validateEmail() {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(emailInput.value.trim())) {
+                    showError(emailError, "Please enter a valid email address");
+                    return false;
+                } else {
+                    hideError(emailError);
+                    return true;
+                }
+            }
+            
+            function validatePassword() {
+                if (passwordInput.value.length === 0) {
+                    showError(passwordError, "Please enter your password");
+                    return false;
+                } else {
+                    hideError(passwordError);
+                    return true;
+                }
+            }
+            
+            function showError(errorElement, message) {
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+                successMessage.style.display = 'none';
+            }
+            
+            function hideError(errorElement) {
+                errorElement.style.display = 'none';
+            }
+            
+            // Real-time validation
+            emailInput.addEventListener('blur', validateEmail);
+            passwordInput.addEventListener('blur', validatePassword);
+            
+            // Form submission
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Validate form
+                const isEmailValid = validateEmail();
+                const isPasswordValid = validatePassword();
+                
+                if (!isEmailValid || !isPasswordValid) {
+                    return;
+                }
+                
+                // Show loading state
+                btnText.textContent = 'Signing In...';
+                btnSpinner.style.display = 'inline-block';
+                loginBtn.disabled = true;
+                
+                // Simulate API call delay
+                setTimeout(authenticateUser, 1000);
+            });
+            
+            // Authentication function
+            function authenticateUser() {
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
+                
+                // Get user data from localStorage
+                const userData = localStorage.getItem('studyAIUser');
+                
+                if (!userData) {
+                    // No user registered
+                    showError(emailError, "No account found with this email. Please register first.");
+                    resetButtonState();
+                    return;
+                }
+                
+                const user = JSON.parse(userData);
+                
+                // Check credentials
+                if (user.email === email && user.password === password) {
+                    // Successful login
+                    successMessage.style.display = 'block';
+                    hideError(emailError);
+                    hideError(passwordError);
+                    btnText.textContent = 'Login Successful!';
+                    
+                    // Save email if "Remember me" is checked
+                    if (rememberMe.checked) {
+                        localStorage.setItem('studyAIRememberEmail', email);
+                    } else {
+                        localStorage.removeItem('studyAIRememberEmail');
+                    }
+                    
+                    // Set login session
+                    const sessionData = {
+                        isLoggedIn: true,
+                        userId: email,
+                        loginTime: new Date().toISOString(),
+                        userName: user.name
+                    };
+                    localStorage.setItem('studyAISession', JSON.stringify(sessionData));
+                    
+                    // Redirect to dashboard after delay
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1000);
+                    
+                } else {
+                    // Failed login
+                    if (user.email !== email) {
+                        showError(emailError, "No account found with this email");
+                    } else {
+                        showError(passwordError, "Incorrect password. Please try again.");
+                    }
+                    resetButtonState();
+                }
+            }
+            
+            function resetButtonState() {
+                btnText.textContent = 'Sign In';
+                btnSpinner.style.display = 'none';
+                loginBtn.disabled = false;
+            }
+            
+            // Check if user is already logged in
+            function checkLoginStatus() {
+                const sessionData = localStorage.getItem('studyAISession');
+                if (sessionData) {
+                    const session = JSON.parse(sessionData);
+                    if (session.isLoggedIn) {
+                        // User is already logged in, redirect to dashboard
+                        window.location.href = 'dashboard.html';
+                    }
+                }
+            }
+            
+            // Demo account login for testing (remove in production)
+            function setupDemoAccount() {
+                // Create a demo account if none exists
+                const userData = localStorage.getItem('studyAIUser');
+                if (!userData) {
+                    const demoUser = {
+                        name: "Demo Student",
+                        class: "12",
+                        goal: "exam",
+                        email: "demo@student.com",
+                        password: "demo123",
+                        registrationDate: new Date().toISOString()
+                    };
+                    localStorage.setItem('studyAIUser', JSON.stringify(demoUser));
+                    console.log("Demo account created: demo@student.com / demo123");
+                }
+            }
+            
+            // Uncomment the line below to enable demo account creation
+            // setupDemoAccount();
+        });
+    </script>
+</body>
+</html>

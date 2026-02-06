@@ -1,0 +1,2082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile & Settings | Smart AI Study Planner</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #7c3aed;
+            --primary-dark: #5b21b6;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --sidebar-bg: #111827;
+            --text: #f8fafc;
+            --text-light: #cbd5e1;
+            --border: #334155;
+            --success: #10b981;
+            --purple-light: #a78bfa;
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-bg);
+            padding: 25px 0;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 100;
+        }
+        
+        .sidebar-header {
+            padding: 0 25px 25px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .logo-icon {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-right: 10px;
+        }
+        
+        .logo-text {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .logo-subtitle {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-left: 50px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            margin-bottom: 20px;
+        }
+        
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--info));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 18px;
+            margin-right: 12px;
+        }
+        
+        .user-details h4 {
+            font-size: 16px;
+            margin-bottom: 3px;
+        }
+        
+        .user-details p {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 30px;
+        }
+        
+        .nav-item {
+            margin-bottom: 5px;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 25px;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-link i {
+            width: 20px;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+        }
+        
+        .nav-link.active {
+            background-color: rgba(124, 58, 237, 0.1);
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+        
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 20px 25px 0;
+            border-top: 1px solid var(--border);
+        }
+        
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px;
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .logout-btn i {
+            margin-right: 8px;
+        }
+        
+        .logout-btn:hover {
+            background-color: rgba(239, 68, 68, 0.2);
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 30px;
+            min-height: 100vh;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .header-left h1 {
+            font-size: 28px;
+            font-weight: 700;
+        }
+        
+        .header-left p {
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+        
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        /* Profile Container */
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Profile Header */
+        .profile-header {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .profile-avatar {
+            position: relative;
+        }
+        
+        .avatar-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--info));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 42px;
+            font-weight: 700;
+            color: white;
+            border: 4px solid var(--card-bg);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .avatar-edit {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            border: 3px solid var(--card-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .avatar-edit:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.1);
+        }
+        
+        .profile-info {
+            flex: 1;
+        }
+        
+        .profile-name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .profile-title {
+            font-size: 16px;
+            color: var(--text-light);
+            margin-bottom: 15px;
+        }
+        
+        .profile-stats {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .profile-stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+        
+        /* Profile Content */
+        .profile-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+        }
+        
+        @media (max-width: 1100px) {
+            .profile-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Profile Sections */
+        .profile-section {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            padding: 20px 25px;
+            background-color: rgba(124, 58, 237, 0.1);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            color: var(--primary);
+        }
+        
+        .section-action {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .section-action:hover {
+            text-decoration: underline;
+        }
+        
+        .section-body {
+            padding: 25px;
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: #2d3748;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+        }
+        
+        .form-control:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+        
+        .input-with-icon .form-control {
+            padding-left: 45px;
+        }
+        
+        .select-wrapper {
+            position: relative;
+        }
+        
+        .select-wrapper i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: var(--text-light);
+        }
+        
+        select.form-control {
+            appearance: none;
+            padding-right: 45px;
+        }
+        
+        /* Settings Options */
+        .settings-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: #2d3748;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .setting-item:hover {
+            border-color: var(--primary);
+            background-color: rgba(124, 58, 237, 0.05);
+        }
+        
+        .setting-info h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .setting-info p {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        .setting-toggle {
+            position: relative;
+        }
+        
+        .toggle-switch {
+            width: 50px;
+            height: 26px;
+            background-color: #4b5563;
+            border-radius: 13px;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .toggle-switch.active {
+            background-color: var(--primary);
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background-color: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+        
+        .toggle-switch.active::after {
+            transform: translateX(24px);
+        }
+        
+        /* Study Preferences */
+        .preferences-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .preference-item {
+            background-color: #2d3748;
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .preference-label {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+        
+        .preference-value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        /* Study History */
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: #2d3748;
+            border-radius: 8px;
+            border-left: 4px solid transparent;
+        }
+        
+        .history-item.recent {
+            border-left-color: var(--secondary);
+        }
+        
+        .history-item.average {
+            border-left-color: var(--warning);
+        }
+        
+        .history-item.low {
+            border-left-color: var(--danger);
+        }
+        
+        .history-info h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .history-info p {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        .history-value {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        
+        /* Account Actions */
+        .account-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-color: #2d3748;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .action-btn:hover {
+            background-color: rgba(124, 58, 237, 0.1);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .action-btn i {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .action-btn.danger:hover {
+            background-color: rgba(239, 68, 68, 0.1);
+            border-color: var(--danger);
+        }
+        
+        .action-btn.danger i {
+            color: var(--danger);
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn-secondary {
+            background-color: #2d3748;
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #374151;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+        }
+        
+        .btn-success:hover {
+            background-color: #0da271;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            padding: 25px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 22px;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .modal-close:hover {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+        
+        .modal-body {
+            padding: 25px;
+        }
+        
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+            
+            .profile-stats {
+                justify-content: center;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .profile-stats {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+            
+            .account-actions {
+                grid-template-columns: 1fr;
+            }
+            
+            .preferences-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-footer {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div class="logo-text">StudyAI</div>
+            </div>
+            <div class="logo-subtitle">Smart AI Study Planner</div>
+        </div>
+        
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar">JS</div>
+            <div class="user-details">
+                <h4 id="sidebarUserName">John Student</h4>
+                <p id="sidebarUserClass">Grade 12</p>
+            </div>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="planner.html" class="nav-link">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Study Planner</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="timetable.html" class="nav-link">
+                    <i class="fas fa-table"></i>
+                    <span>Daily Timetable</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="subjects.html" class="nav-link">
+                    <i class="fas fa-book"></i>
+                    <span>My Subjects</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="progress.html" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Progress</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="profile.html" class="nav-link active">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <button class="logout-btn" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <h1>Profile & Settings</h1>
+                <p>Manage your account, preferences, and study settings</p>
+            </div>
+            
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        
+        <!-- Profile Container -->
+        <div class="profile-container">
+            <!-- Profile Header -->
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <div class="avatar-large" id="profileAvatar">JS</div>
+                    <div class="avatar-edit" id="editAvatarBtn">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                </div>
+                
+                <div class="profile-info">
+                    <h1 class="profile-name" id="profileName">John Student</h1>
+                    <p class="profile-title" id="profileTitle">Grade 12 Student • Joined March 2024</p>
+                    <p class="profile-bio" id="profileBio">Dedicated student using AI to optimize study time and achieve academic goals. Currently focusing on Mathematics and Physics for upcoming exams.</p>
+                    
+                    <div class="profile-stats">
+                        <div class="profile-stat">
+                            <span class="stat-value" id="statDays">42</span>
+                            <span class="stat-label">Study Days</span>
+                        </div>
+                        <div class="profile-stat">
+                            <span class="stat-value" id="statHours">156.5</span>
+                            <span class="stat-label">Total Hours</span>
+                        </div>
+                        <div class="profile-stat">
+                            <span class="stat-value" id="statCompletion">78%</span>
+                            <span class="stat-label">Completion Rate</span>
+                        </div>
+                        <div class="profile-stat">
+                            <span class="stat-value" id="statStreak">14</span>
+                            <span class="stat-label">Day Streak</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Profile Content -->
+            <div class="profile-content">
+                <!-- Left Column -->
+                <div class="left-column">
+                    <!-- Personal Information -->
+                    <div class="profile-section">
+                        <div class="section-header">
+                            <h3 class="section-title">
+                                <i class="fas fa-user-circle"></i>
+                                Personal Information
+                            </h3>
+                            <span class="section-action" id="editPersonalInfo">Edit</span>
+                        </div>
+                        <div class="section-body">
+                            <form id="personalInfoForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="firstName" class="form-label">First Name</label>
+                                        <input type="text" id="firstName" class="form-control" value="John" disabled>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="lastName" class="form-label">Last Name</label>
+                                        <input type="text" id="lastName" class="form-control" value="Student" disabled>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="email" class="form-label">Email Address</label>
+                                    <div class="input-with-icon">
+                                        <i class="fas fa-envelope"></i>
+                                        <input type="email" id="email" class="form-control" value="john.student@example.com" disabled>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="classGrade" class="form-label">Class / Grade</label>
+                                        <div class="select-wrapper">
+                                            <i class="fas fa-graduation-cap"></i>
+                                            <select id="classGrade" class="form-control" disabled>
+                                                <option value="9">Grade 9</option>
+                                                <option value="10">Grade 10</option>
+                                                <option value="11">Grade 11</option>
+                                                <option value="12" selected>Grade 12</option>
+                                                <option value="college">College</option>
+                                                <option value="university">University</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="studyGoal" class="form-label">Primary Study Goal</label>
+                                        <div class="select-wrapper">
+                                            <i class="fas fa-bullseye"></i>
+                                            <select id="studyGoal" class="form-control" disabled>
+                                                <option value="exam" selected>Upcoming Exam</option>
+                                                <option value="improve">Improve Grades</option>
+                                                <option value="learn">Learn New Subject</option>
+                                                <option value="maintain">Maintain Performance</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="bio" class="form-label">Bio / Description</label>
+                                    <textarea id="bio" class="form-control" rows="3" disabled>Dedicated student using AI to optimize study time and achieve academic goals. Currently focusing on Mathematics and Physics for upcoming exams.</textarea>
+                                </div>
+                                
+                                <button type="button" class="btn btn-block" id="savePersonalInfo" style="display: none;">
+                                    <i class="fas fa-save"></i>
+                                    Save Changes
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Study Preferences -->
+                    <div class="profile-section">
+                        <div class="section-header">
+                            <h3 class="section-title">
+                                <i class="fas fa-cogs"></i>
+                                Study Preferences
+                            </h3>
+                            <span class="section-action" id="editPreferences">Edit</span>
+                        </div>
+                        <div class="section-body">
+                            <div class="preferences-grid" id="preferencesGrid">
+                                <!-- Preferences will be loaded here -->
+                            </div>
+                            
+                            <div id="preferencesForm" style="display: none;">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="dailyHours" class="form-label">Daily Study Hours</label>
+                                        <div class="input-with-icon">
+                                            <i class="fas fa-clock"></i>
+                                            <input type="number" id="dailyHours" class="form-control" min="1" max="12" value="4.5" step="0.5">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="studyDays" class="form-label">Study Days Per Week</label>
+                                        <div class="select-wrapper">
+                                            <i class="fas fa-calendar-week"></i>
+                                            <select id="studyDays" class="form-control">
+                                                <option value="5">5 days (Weekdays)</option>
+                                                <option value="6">6 days (Weekdays + Saturday)</option>
+                                                <option value="7" selected>7 days (Every day)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="preferredTime" class="form-label">Preferred Study Time</label>
+                                        <div class="select-wrapper">
+                                            <i class="fas fa-sun"></i>
+                                            <select id="preferredTime" class="form-control">
+                                                <option value="morning">Morning (6 AM - 12 PM)</option>
+                                                <option value="afternoon" selected>Afternoon (12 PM - 6 PM)</option>
+                                                <option value="evening">Evening (6 PM - 12 AM)</option>
+                                                <option value="mixed">Mixed (Based on availability)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="sessionLength" class="form-label">Preferred Session Length</label>
+                                        <div class="select-wrapper">
+                                            <i class="fas fa-hourglass-half"></i>
+                                            <select id="sessionLength" class="form-control">
+                                                <option value="30">30 minutes</option>
+                                                <option value="45">45 minutes</option>
+                                                <option value="60" selected>60 minutes</option>
+                                                <option value="90">90 minutes</option>
+                                                <option value="120">120 minutes</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="breakFrequency" class="form-label">Break Frequency</label>
+                                    <div class="select-wrapper">
+                                        <i class="fas fa-coffee"></i>
+                                        <select id="breakFrequency" class="form-control">
+                                            <option value="30">Every 30 minutes</option>
+                                            <option value="45">Every 45 minutes</option>
+                                            <option value="60" selected>Every 60 minutes</option>
+                                            <option value="90">Every 90 minutes</option>
+                                            <option value="120">Every 120 minutes</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <button type="button" class="btn btn-block" id="savePreferences">
+                                    <i class="fas fa-save"></i>
+                                    Save Preferences
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Study History -->
+                    <div class="profile-section">
+                        <div class="section-header">
+                            <h3 class="section-title">
+                                <i class="fas fa-history"></i>
+                                Study History
+                            </h3>
+                            <span class="section-action" id="viewAllHistory">View All</span>
+                        </div>
+                        <div class="section-body">
+                            <div class="history-list" id="studyHistory">
+                                <!-- Study history will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Column -->
+                <div class="right-column">
+                    <!-- Account Settings -->
+                    <div class="profile-section">
+                        <div class="section-header">
+                            <h3 class="section-title">
+                                <i class="fas fa-sliders-h"></i>
+                                Account Settings
+                            </h3>
+                        </div>
+                        <div class="section-body">
+                            <div class="settings-options">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Dark Theme</h4>
+                                        <p>Use dark theme for better focus</p>
+                                    </div>
+                                    <div class="setting-toggle">
+                                        <div class="toggle-switch active" id="darkThemeToggle"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Email Notifications</h4>
+                                        <p>Receive study reminders via email</p>
+                                    </div>
+                                    <div class="setting-toggle">
+                                        <div class="toggle-switch active" id="emailNotificationsToggle"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Push Notifications</h4>
+                                        <p>Get study reminders on your device</p>
+                                    </div>
+                                    <div class="setting-toggle">
+                                        <div class="toggle-switch" id="pushNotificationsToggle"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>AI Study Recommendations</h4>
+                                        <p>Receive personalized study tips from AI</p>
+                                    </div>
+                                    <div class="setting-toggle">
+                                        <div class="toggle-switch active" id="aiRecommendationsToggle"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Weekly Progress Reports</h4>
+                                        <p>Get weekly progress summaries</p>
+                                    </div>
+                                    <div class="setting-toggle">
+                                        <div class="toggle-switch active" id="weeklyReportsToggle"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Account Actions -->
+                    <div class="profile-section">
+                        <div class="section-header">
+                            <h3 class="section-title">
+                                <i class="fas fa-tools"></i>
+                                Account Actions
+                            </h3>
+                        </div>
+                        <div class="section-body">
+                            <div class="account-actions">
+                                <a href="#" class="action-btn" id="changePasswordBtn">
+                                    <i class="fas fa-key"></i>
+                                    <span>Change Password</span>
+                                </a>
+                                
+                                <a href="#" class="action-btn" id="exportDataBtn">
+                                    <i class="fas fa-download"></i>
+                                    <span>Export Data</span>
+                                </a>
+                                
+                                <a href="#" class="action-btn" id="privacySettingsBtn">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <span>Privacy Settings</span>
+                                </a>
+                                
+                                <a href="#" class="action-btn danger" id="deleteAccountBtn">
+                                    <i class="fas fa-trash-alt"></i>
+                                    <span>Delete Account</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- System Information -->
+                    <div class="profile-section">
+                        <div class="section-header">
+                            <h3 class="section-title">
+                                <i class="fas fa-info-circle"></i>
+                                System Information
+                            </h3>
+                        </div>
+                        <div class="section-body">
+                            <div class="preferences-grid">
+                                <div class="preference-item">
+                                    <div class="preference-label">App Version</div>
+                                    <div class="preference-value" id="appVersion">2.1.0</div>
+                                </div>
+                                <div class="preference-item">
+                                    <div class="preference-label">Last Login</div>
+                                    <div class="preference-value" id="lastLogin">Today, 10:24 AM</div>
+                                </div>
+                                <div class="preference-item">
+                                    <div class="preference-label">Account Created</div>
+                                    <div class="preference-value" id="accountCreated">March 15, 2024</div>
+                                </div>
+                                <div class="preference-item">
+                                    <div class="preference-label">Study Plans Created</div>
+                                    <div class="preference-value" id="plansCreated">8</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Change Password Modal -->
+    <div class="modal" id="passwordModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Change Password</h3>
+                <button class="modal-close" id="passwordModalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <form id="passwordForm">
+                    <div class="form-group">
+                        <label for="currentPassword" class="form-label">Current Password</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="currentPassword" class="form-control" placeholder="Enter current password" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="newPassword" class="form-label">New Password</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="newPassword" class="form-control" placeholder="Enter new password" required>
+                        </div>
+                        <p style="font-size: 13px; color: var(--text-light); margin-top: 5px;">Must be at least 6 characters long</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="confirmPassword" class="form-control" placeholder="Confirm new password" required>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn-secondary" id="passwordModalCancel">Cancel</button>
+                <button class="btn" id="passwordModalSave">Change Password</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete Account Modal -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Delete Account</h3>
+                <button class="modal-close" id="deleteModalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: var(--danger); margin-bottom: 15px;"></i>
+                    <h3 style="margin-bottom: 10px;">Warning: This action cannot be undone</h3>
+                    <p style="color: var(--text-light); line-height: 1.6;">
+                        Deleting your account will permanently remove all your data including:
+                    </p>
+                    <ul style="text-align: left; color: var(--text-light); margin: 15px 0; padding-left: 20px;">
+                        <li>All study plans and schedules</li>
+                        <li>Subject information and progress</li>
+                        <li>Study history and analytics</li>
+                        <li>Account preferences and settings</li>
+                    </ul>
+                    <p style="color: var(--text-light); line-height: 1.6;">
+                        Are you sure you want to delete your account?
+                    </p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmDelete" class="form-label">Type "DELETE" to confirm</label>
+                    <input type="text" id="confirmDelete" class="form-control" placeholder="Type DELETE here">
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn-secondary" id="deleteModalCancel">Cancel</button>
+                <button class="btn-danger" id="deleteModalConfirm" disabled>Delete My Account</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in
+            checkLoginStatus();
+            
+            // DOM Elements
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.getElementById('menuToggle');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const userAvatar = document.getElementById('userAvatar');
+            const sidebarUserName = document.getElementById('sidebarUserName');
+            const sidebarUserClass = document.getElementById('sidebarUserClass');
+            
+            // Profile Elements
+            const profileAvatar = document.getElementById('profileAvatar');
+            const profileName = document.getElementById('profileName');
+            const profileTitle = document.getElementById('profileTitle');
+            const profileBio = document.getElementById('profileBio');
+            const editAvatarBtn = document.getElementById('editAvatarBtn');
+            
+            // Stats Elements
+            const statDays = document.getElementById('statDays');
+            const statHours = document.getElementById('statHours');
+            const statCompletion = document.getElementById('statCompletion');
+            const statStreak = document.getElementById('statStreak');
+            
+            // Personal Info Elements
+            const editPersonalInfo = document.getElementById('editPersonalInfo');
+            const savePersonalInfo = document.getElementById('savePersonalInfo');
+            const firstName = document.getElementById('firstName');
+            const lastName = document.getElementById('lastName');
+            const email = document.getElementById('email');
+            const classGrade = document.getElementById('classGrade');
+            const studyGoal = document.getElementById('studyGoal');
+            const bio = document.getElementById('bio');
+            
+            // Preferences Elements
+            const editPreferences = document.getElementById('editPreferences');
+            const preferencesGrid = document.getElementById('preferencesGrid');
+            const preferencesForm = document.getElementById('preferencesForm');
+            const savePreferences = document.getElementById('savePreferences');
+            
+            // Study History Elements
+            const studyHistory = document.getElementById('studyHistory');
+            const viewAllHistory = document.getElementById('viewAllHistory');
+            
+            // Toggle Switches
+            const darkThemeToggle = document.getElementById('darkThemeToggle');
+            const emailNotificationsToggle = document.getElementById('emailNotificationsToggle');
+            const pushNotificationsToggle = document.getElementById('pushNotificationsToggle');
+            const aiRecommendationsToggle = document.getElementById('aiRecommendationsToggle');
+            const weeklyReportsToggle = document.getElementById('weeklyReportsToggle');
+            
+            // Account Action Buttons
+            const changePasswordBtn = document.getElementById('changePasswordBtn');
+            const exportDataBtn = document.getElementById('exportDataBtn');
+            const privacySettingsBtn = document.getElementById('privacySettingsBtn');
+            const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+            
+            // System Info Elements
+            const appVersion = document.getElementById('appVersion');
+            const lastLogin = document.getElementById('lastLogin');
+            const accountCreated = document.getElementById('accountCreated');
+            const plansCreated = document.getElementById('plansCreated');
+            
+            // Modal Elements
+            const passwordModal = document.getElementById('passwordModal');
+            const passwordModalClose = document.getElementById('passwordModalClose');
+            const passwordModalCancel = document.getElementById('passwordModalCancel');
+            const passwordModalSave = document.getElementById('passwordModalSave');
+            
+            const deleteModal = document.getElementById('deleteModal');
+            const deleteModalClose = document.getElementById('deleteModalClose');
+            const deleteModalCancel = document.getElementById('deleteModalCancel');
+            const deleteModalConfirm = document.getElementById('deleteModalConfirm');
+            const confirmDelete = document.getElementById('confirmDelete');
+            
+            // User Data
+            let userData = {};
+            let preferences = {};
+            let settings = {};
+            
+            // Load user data
+            loadUserData();
+            
+            // Toggle sidebar on mobile
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+            });
+            
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(event) {
+                if (window.innerWidth <= 900 && 
+                    !sidebar.contains(event.target) && 
+                    !menuToggle.contains(event.target) && 
+                    sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                }
+            });
+            
+            // Logout functionality
+            logoutBtn.addEventListener('click', function() {
+                // Clear session
+                localStorage.removeItem('studyAISession');
+                
+                // Redirect to login page
+                window.location.href = 'login.html';
+            });
+            
+            // Edit avatar
+            editAvatarBtn.addEventListener('click', function() {
+                // In a real app, this would open an avatar upload dialog
+                alert('Avatar upload feature would open here. For now, you can change your initials by editing your name.');
+            });
+            
+            // Edit personal info
+            let isEditingPersonalInfo = false;
+            editPersonalInfo.addEventListener('click', function() {
+                if (isEditingPersonalInfo) {
+                    // Cancel editing
+                    disablePersonalInfoEditing();
+                    editPersonalInfo.textContent = 'Edit';
+                    savePersonalInfo.style.display = 'none';
+                    isEditingPersonalInfo = false;
+                } else {
+                    // Start editing
+                    enablePersonalInfoEditing();
+                    editPersonalInfo.textContent = 'Cancel';
+                    savePersonalInfo.style.display = 'block';
+                    isEditingPersonalInfo = true;
+                }
+            });
+            
+            // Save personal info
+            savePersonalInfo.addEventListener('click', function() {
+                // Validate form
+                if (!firstName.value.trim() || !lastName.value.trim()) {
+                    alert('Please enter your first and last name.');
+                    return;
+                }
+                
+                // Update user data
+                userData.name = `${firstName.value.trim()} ${lastName.value.trim()}`;
+                userData.class = classGrade.value;
+                userData.goal = studyGoal.value;
+                userData.bio = bio.value.trim();
+                
+                // Save to localStorage
+                localStorage.setItem('studyAIUser', JSON.stringify(userData));
+                
+                // Update UI
+                updateProfileUI();
+                
+                // Disable editing
+                disablePersonalInfoEditing();
+                editPersonalInfo.textContent = 'Edit';
+                savePersonalInfo.style.display = 'none';
+                isEditingPersonalInfo = false;
+                
+                // Show success message
+                alert('Profile updated successfully!');
+            });
+            
+            // Edit preferences
+            let isEditingPreferences = false;
+            editPreferences.addEventListener('click', function() {
+                if (isEditingPreferences) {
+                    // Cancel editing
+                    preferencesForm.style.display = 'none';
+                    preferencesGrid.style.display = 'grid';
+                    editPreferences.textContent = 'Edit';
+                    isEditingPreferences = false;
+                } else {
+                    // Start editing
+                    preferencesGrid.style.display = 'none';
+                    preferencesForm.style.display = 'block';
+                    editPreferences.textContent = 'Cancel';
+                    isEditingPreferences = true;
+                    
+                    // Load current preferences into form
+                    loadPreferencesToForm();
+                }
+            });
+            
+            // Save preferences
+            savePreferences.addEventListener('click', function() {
+                // Save preferences
+                preferences = {
+                    dailyHours: parseFloat(document.getElementById('dailyHours').value) || 4.5,
+                    studyDays: document.getElementById('studyDays').value,
+                    preferredTime: document.getElementById('preferredTime').value,
+                    sessionLength: document.getElementById('sessionLength').value,
+                    breakFrequency: document.getElementById('breakFrequency').value
+                };
+                
+                // Save to localStorage
+                localStorage.setItem('studyAIPreferences', JSON.stringify(preferences));
+                
+                // Update UI
+                updatePreferencesGrid();
+                
+                // Switch back to view mode
+                preferencesForm.style.display = 'none';
+                preferencesGrid.style.display = 'grid';
+                editPreferences.textContent = 'Edit';
+                isEditingPreferences = false;
+                
+                // Also update study plan if it exists
+                updateStudyPlanPreferences();
+                
+                // Show success message
+                alert('Study preferences updated successfully!');
+            });
+            
+            // View all history
+            viewAllHistory.addEventListener('click', function() {
+                // In a real app, this would navigate to a detailed history page
+                alert('This would navigate to a detailed study history page with full analytics.');
+            });
+            
+            // Toggle switches
+            darkThemeToggle.addEventListener('click', function() {
+                this.classList.toggle('active');
+                updateSetting('darkTheme', this.classList.contains('active'));
+            });
+            
+            emailNotificationsToggle.addEventListener('click', function() {
+                this.classList.toggle('active');
+                updateSetting('emailNotifications', this.classList.contains('active'));
+            });
+            
+            pushNotificationsToggle.addEventListener('click', function() {
+                this.classList.toggle('active');
+                updateSetting('pushNotifications', this.classList.contains('active'));
+            });
+            
+            aiRecommendationsToggle.addEventListener('click', function() {
+                this.classList.toggle('active');
+                updateSetting('aiRecommendations', this.classList.contains('active'));
+            });
+            
+            weeklyReportsToggle.addEventListener('click', function() {
+                this.classList.toggle('active');
+                updateSetting('weeklyReports', this.classList.contains('active'));
+            });
+            
+            // Account actions
+            changePasswordBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                passwordModal.classList.add('active');
+            });
+            
+            exportDataBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                // In a real app, this would export user data
+                alert('Your data would be exported as a ZIP file containing all study plans, progress reports, and settings.');
+            });
+            
+            privacySettingsBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                // In a real app, this would open privacy settings
+                alert('Privacy settings page would open here.');
+            });
+            
+            deleteAccountBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                deleteModal.classList.add('active');
+            });
+            
+            // Password modal
+            passwordModalClose.addEventListener('click', closePasswordModal);
+            passwordModalCancel.addEventListener('click', closePasswordModal);
+            
+            passwordModalSave.addEventListener('click', function() {
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                
+                // Validate
+                if (!currentPassword || !newPassword || !confirmPassword) {
+                    alert('Please fill in all password fields.');
+                    return;
+                }
+                
+                if (newPassword.length < 6) {
+                    alert('New password must be at least 6 characters long.');
+                    return;
+                }
+                
+                if (newPassword !== confirmPassword) {
+                    alert('New passwords do not match.');
+                    return;
+                }
+                
+                // In a real app, this would validate current password and update it
+                // For demo purposes, we'll just show a success message
+                
+                // Clear form
+                document.getElementById('currentPassword').value = '';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmPassword').value = '';
+                
+                // Close modal
+                closePasswordModal();
+                
+                // Show success message
+                alert('Password changed successfully!');
+            });
+            
+            // Delete modal
+            deleteModalClose.addEventListener('click', closeDeleteModal);
+            deleteModalCancel.addEventListener('click', closeDeleteModal);
+            
+            confirmDelete.addEventListener('input', function() {
+                deleteModalConfirm.disabled = this.value.toUpperCase() !== 'DELETE';
+            });
+            
+            deleteModalConfirm.addEventListener('click', function() {
+                if (confirmDelete.value.toUpperCase() !== 'DELETE') {
+                    alert('Please type "DELETE" to confirm.');
+                    return;
+                }
+                
+                // In a real app, this would delete the account
+                // For demo, we'll just show a message and redirect to login
+                
+                // Clear all user data
+                localStorage.removeItem('studyAIUser');
+                localStorage.removeItem('studyAISession');
+                localStorage.removeItem('studyAIPlan');
+                localStorage.removeItem('studyAISubjects');
+                localStorage.removeItem('studyAIProgress');
+                localStorage.removeItem('studyAIPreferences');
+                localStorage.removeItem('studyAISettings');
+                
+                // Close modal
+                closeDeleteModal();
+                
+                // Show message and redirect
+                alert('Account deleted successfully. Thank you for using StudyAI!');
+                window.location.href = 'login.html';
+            });
+            
+            // Load user data
+            function loadUserData() {
+                // Get user data from localStorage
+                const savedUserData = localStorage.getItem('studyAIUser');
+                userData = savedUserData ? JSON.parse(savedUserData) : {};
+                
+                // Get preferences
+                const savedPreferences = localStorage.getItem('studyAIPreferences');
+                preferences = savedPreferences ? JSON.parse(savedPreferences) : getDefaultPreferences();
+                
+                // Get settings
+                const savedSettings = localStorage.getItem('studyAISettings');
+                settings = savedSettings ? JSON.parse(savedSettings) : getDefaultSettings();
+                
+                // Update UI with loaded data
+                updateProfileUI();
+                updatePreferencesGrid();
+                updateStudyHistory();
+                updateSettingsUI();
+                updateSystemInfo();
+            }
+            
+            // Get default preferences
+            function getDefaultPreferences() {
+                return {
+                    dailyHours: 4.5,
+                    studyDays: '7',
+                    preferredTime: 'afternoon',
+                    sessionLength: '60',
+                    breakFrequency: '60'
+                };
+            }
+            
+            // Get default settings
+            function getDefaultSettings() {
+                return {
+                    darkTheme: true,
+                    emailNotifications: true,
+                    pushNotifications: false,
+                    aiRecommendations: true,
+                    weeklyReports: true
+                };
+            }
+            
+            // Update profile UI
+            function updateProfileUI() {
+                // Set profile name
+                const name = userData.name || 'John Student';
+                profileName.textContent = name;
+                sidebarUserName.textContent = name;
+                
+                // Set avatar initials
+                const nameParts = name.split(' ');
+                const initials = nameParts.length > 1 
+                    ? (nameParts[0][0] + nameParts[1][0]).toUpperCase()
+                    : nameParts[0].substring(0, 2).toUpperCase();
+                profileAvatar.textContent = initials;
+                userAvatar.textContent = initials;
+                
+                // Set class/grade
+                const classMap = {
+                    '9': 'Grade 9',
+                    '10': 'Grade 10',
+                    '11': 'Grade 11',
+                    '12': 'Grade 12',
+                    'college': 'College',
+                    'university': 'University',
+                    'other': 'Other'
+                };
+                const userClass = classMap[userData.class] || `Grade ${userData.class}` || 'Grade 12';
+                sidebarUserClass.textContent = userClass;
+                
+                // Set profile title
+                const goalMap = {
+                    'exam': 'Upcoming Exam',
+                    'improve': 'Improve Grades',
+                    'learn': 'Learn New Subject',
+                    'maintain': 'Maintain Performance',
+                    'other': 'Other'
+                };
+                const goal = goalMap[userData.goal] || 'Upcoming Exam';
+                profileTitle.textContent = `${userClass} Student • ${goal}`;
+                
+                // Set bio
+                if (userData.bio) {
+                    profileBio.textContent = userData.bio;
+                }
+                
+                // Set form values
+                if (nameParts.length > 1) {
+                    firstName.value = nameParts[0];
+                    lastName.value = nameParts.slice(1).join(' ');
+                } else {
+                    firstName.value = name;
+                    lastName.value = '';
+                }
+                
+                email.value = userData.email || 'john.student@example.com';
+                classGrade.value = userData.class || '12';
+                studyGoal.value = userData.goal || 'exam';
+                bio.value = userData.bio || 'Dedicated student using AI to optimize study time and achieve academic goals. Currently focusing on Mathematics and Physics for upcoming exams.';
+                
+                // Update stats (these would come from progress data in a real app)
+                updateStats();
+            }
+            
+            // Update stats
+            function updateStats() {
+                // In a real app, these would be calculated from actual study data
+                // For demo, we'll use fixed values or calculate from localStorage
+                
+                const savedPlan = localStorage.getItem('studyAIPlan');
+                const savedProgress = localStorage.getItem('studyAIProgress');
+                
+                if (savedPlan) {
+                    const plan = JSON.parse(savedPlan);
+                    if (plan.dailyPlans) {
+                        statDays.textContent = plan.dailyPlans.length;
+                        
+                        // Calculate total hours
+                        let totalHours = 0;
+                        plan.dailyPlans.forEach(day => {
+                            day.sessions.forEach(session => {
+                                if (session.subject !== 'Break') {
+                                    totalHours += session.duration / 60;
+                                }
+                            });
+                        });
+                        statHours.textContent = totalHours.toFixed(1);
+                    }
+                }
+                
+                if (savedProgress) {
+                    const progress = JSON.parse(savedProgress);
+                    statCompletion.textContent = `${progress.stats.completionRate}%`;
+                    
+                    // Generate random streak (1-30 days)
+                    statStreak.textContent = Math.floor(Math.random() * 30) + 1;
+                }
+            }
+            
+            // Enable personal info editing
+            function enablePersonalInfoEditing() {
+                firstName.disabled = false;
+                lastName.disabled = false;
+                classGrade.disabled = false;
+                studyGoal.disabled = false;
+                bio.disabled = false;
+            }
+            
+            // Disable personal info editing
+            function disablePersonalInfoEditing() {
+                firstName.disabled = true;
+                lastName.disabled = true;
+                classGrade.disabled = true;
+                studyGoal.disabled = true;
+                bio.disabled = true;
+            }
+            
+            // Update preferences grid
+            function updatePreferencesGrid() {
+                preferencesGrid.innerHTML = '';
+                
+                const preferenceItems = [
+                    {
+                        label: 'Daily Study Hours',
+                        value: `${preferences.dailyHours} hours`,
+                        icon: 'fa-clock'
+                    },
+                    {
+                        label: 'Study Days Per Week',
+                        value: preferences.studyDays === '7' ? 'Every day' : `${preferences.studyDays} days per week`,
+                        icon: 'fa-calendar-week'
+                    },
+                    {
+                        label: 'Preferred Study Time',
+                        value: formatStudyTime(preferences.preferredTime),
+                        icon: 'fa-sun'
+                    },
+                    {
+                        label: 'Session Length',
+                        value: `${preferences.sessionLength} minutes`,
+                        icon: 'fa-hourglass-half'
+                    },
+                    {
+                        label: 'Break Frequency',
+                        value: `Every ${preferences.breakFrequency} minutes`,
+                        icon: 'fa-coffee'
+                    }
+                ];
+                
+                preferenceItems.forEach(item => {
+                    const preferenceItem = document.createElement('div');
+                    preferenceItem.className = 'preference-item';
+                    
+                    preferenceItem.innerHTML = `
+                        <div class="preference-label">
+                            <i class="fas ${item.icon}"></i> ${item.label}
+                        </div>
+                        <div class="preference-value">${item.value}</div>
+                    `;
+                    
+                    preferencesGrid.appendChild(preferenceItem);
+                });
+            }
+            
+            // Format study time for display
+            function formatStudyTime(time) {
+                const timeMap = {
+                    'morning': 'Morning (6 AM - 12 PM)',
+                    'afternoon': 'Afternoon (12 PM - 6 PM)',
+                    'evening': 'Evening (6 PM - 12 AM)',
+                    'mixed': 'Mixed (Based on availability)'
+                };
+                
+                return timeMap[time] || time;
+            }
+            
+            // Load preferences to form
+            function loadPreferencesToForm() {
+                document.getElementById('dailyHours').value = preferences.dailyHours;
+                document.getElementById('studyDays').value = preferences.studyDays;
+                document.getElementById('preferredTime').value = preferences.preferredTime;
+                document.getElementById('sessionLength').value = preferences.sessionLength;
+                document.getElementById('breakFrequency').value = preferences.breakFrequency;
+            }
+            
+            // Update study plan preferences
+            function updateStudyPlanPreferences() {
+                const savedPlan = localStorage.getItem('studyAIPlan');
+                if (savedPlan) {
+                    const plan = JSON.parse(savedPlan);
+                    plan.preferences = {
+                        dailyHours: preferences.dailyHours,
+                        daysPerWeek: parseInt(preferences.studyDays),
+                        preferredStudyTime: preferences.preferredTime
+                    };
+                    
+                    localStorage.setItem('studyAIPlan', JSON.stringify(plan));
+                }
+            }
+            
+            // Update study history
+            function updateStudyHistory() {
+                studyHistory.innerHTML = '';
+                
+                // In a real app, this would come from actual study history
+                // For demo, we'll generate sample data
+                const historyItems = [
+                    {
+                        period: 'This Week',
+                        hours: 28.5,
+                        sessions: 18,
+                        trend: 'recent'
+                    },
+                    {
+                        period: 'Last Week',
+                        hours: 24.2,
+                        sessions: 16,
+                        trend: 'average'
+                    },
+                    {
+                        period: 'This Month',
+                        hours: 112.8,
+                        sessions: 72,
+                        trend: 'recent'
+                    },
+                    {
+                        period: 'Last Month',
+                        hours: 98.5,
+                        sessions: 65,
+                        trend: 'average'
+                    },
+                    {
+                        period: 'All Time',
+                        hours: 456.3,
+                        sessions: 312,
+                        trend: 'recent'
+                    }
+                ];
+                
+                historyItems.forEach(item => {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = `history-item ${item.trend}`;
+                    
+                    historyItem.innerHTML = `
+                        <div class="history-info">
+                            <h4>${item.period}</h4>
+                            <p>${item.sessions} study sessions</p>
+                        </div>
+                        <div class="history-value">${item.hours.toFixed(1)}h</div>
+                    `;
+                    
+                    studyHistory.appendChild(historyItem);
+                });
+            }
+            
+            // Update settings UI
+            function updateSettingsUI() {
+                if (settings.darkTheme) darkThemeToggle.classList.add('active');
+                if (settings.emailNotifications) emailNotificationsToggle.classList.add('active');
+                if (settings.pushNotifications) pushNotificationsToggle.classList.add('active');
+                if (settings.aiRecommendations) aiRecommendationsToggle.classList.add('active');
+                if (settings.weeklyReports) weeklyReportsToggle.classList.add('active');
+            }
+            
+            // Update setting
+            function updateSetting(key, value) {
+                settings[key] = value;
+                localStorage.setItem('studyAISettings', JSON.stringify(settings));
+            }
+            
+            // Update system info
+            function updateSystemInfo() {
+                // In a real app, these would come from actual data
+                // For demo, we'll use fixed values
+                
+                // Get last login from session
+                const sessionData = localStorage.getItem('studyAISession');
+                if (sessionData) {
+                    const session = JSON.parse(sessionData);
+                    const loginTime = new Date(session.loginTime);
+                    const now = new Date();
+                    
+                    if (loginTime.toDateString() === now.toDateString()) {
+                        lastLogin.textContent = `Today, ${loginTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+                    } else {
+                        lastLogin.textContent = loginTime.toLocaleDateString('en-US', { 
+                            weekday: 'short', 
+                            month: 'short', 
+                            day: 'numeric' 
+                        });
+                    }
+                }
+                
+                // Get account creation date from user data
+                if (userData.registrationDate) {
+                    const regDate = new Date(userData.registrationDate);
+                    accountCreated.textContent = regDate.toLocaleDateString('en-US', { 
+                        month: 'long', 
+                        day: 'numeric',
+                        year: 'numeric'
+                    });
+                }
+                
+                // Count study plans
+                const savedPlan = localStorage.getItem('studyAIPlan');
+                plansCreated.textContent = savedPlan ? '1' : '0';
+            }
+            
+            // Close password modal
+            function closePasswordModal() {
+                passwordModal.classList.remove('active');
+                // Clear form
+                document.getElementById('currentPassword').value = '';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmPassword').value = '';
+            }
+            
+            // Close delete modal
+            function closeDeleteModal() {
+                deleteModal.classList.remove('active');
+                // Clear confirmation field
+                confirmDelete.value = '';
+                deleteModalConfirm.disabled = true;
+            }
+            
+            // Check login status
+            function checkLoginStatus() {
+                const sessionData = localStorage.getItem('studyAISession');
+                
+                if (!sessionData) {
+                    // Not logged in, redirect to login
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                const session = JSON.parse(sessionData);
+                
+                // Check if session is still valid
+                const loginTime = new Date(session.loginTime);
+                const now = new Date();
+                const hoursSinceLogin = (now - loginTime) / (1000 * 60 * 60);
+                
+                // If session is older than 24 hours, require re-login
+                if (hoursSinceLogin > 24) {
+                    localStorage.removeItem('studyAISession');
+                    window.location.href = 'login.html';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
