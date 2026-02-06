@@ -1,2 +1,3 @@
-# osms
-This is online home sevice management system project using html css js 
+Smart Ai Study planner
+THis is smart Ai platfrom where u can study subjects accroding to their priority, exams syllaabus etc.. recommended by ai.
+
